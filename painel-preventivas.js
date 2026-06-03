@@ -1,6 +1,7 @@
 const SHEET_URL_KEY = "multilixo-painel-preventivas-csv-url";
+const DEFAULT_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRGJVksDnMpL3Gb0NJ6WGyFerN3RYvGSnll8J8HGVEyoIT5nqsOjLJ8hTiLogwI2cWfT6vmfi8ZZP0W/pub?output=csv";
 
-let sheetUrl = localStorage.getItem(SHEET_URL_KEY) || "";
+let sheetUrl = localStorage.getItem(SHEET_URL_KEY) || DEFAULT_SHEET_URL;
 let rawRows = [];
 let visibleRows = [];
 let searchTerm = "";

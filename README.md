@@ -27,7 +27,7 @@ Site estatico para acompanhamento de manutencao preventiva de maquinas, com foco
 
 A pagina `Informacoes gerais` usa a mesma base local das novas solicitacoes cadastradas no painel principal.
 
-A pagina `Painel geral das preventivas` usa um link CSV publicado do Google Sheets. O link fica salvo no navegador pela chave `multilixo-painel-preventivas-csv-url`.
+A pagina `Painel geral das preventivas` usa o link CSV publicado do Google Sheets como fonte padrao. O usuario tambem pode substituir o link na propria pagina; nesse caso, a fonte fica salva no navegador pela chave `multilixo-painel-preventivas-csv-url`.
 
 Os dados sao salvos no navegador pelo `localStorage`, na chave:
 
