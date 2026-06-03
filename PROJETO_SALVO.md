@@ -4,7 +4,7 @@ Projeto: Manutencao Preventiva de Maquinas - Multilixo
 
 Status: salvo e pronto para publicacao estatica no GitHub Pages.
 
-Versao final: v39.
+Versao final: v43.
 
 Ultimas atualizacoes:
 
@@ -17,6 +17,10 @@ Ultimas atualizacoes:
 - Metas exibidas tambem no painel principal de gargalos.
 - Nova pagina Painel geral das preventivas criada para consumir Google Sheets publicado como CSV.
 - Link CSV do Google Sheets configurado como fonte padrao do Painel geral das preventivas.
+- Indicadores do painel geral das preventivas ajustados para a fonte: frota monitorada, em dia, vencidas, vencem em ate 30 dias, maior atraso e aderencia.
+- Indicadores principais usando o resumo oficial da planilha: Frota Op., Em dia e Vencidas.
+- Grafico de linha unica adicionado com em dia, aderencia e vencidas.
+- Regra de aderencia ajustada para desvio entre -50h e +50h.
 
 Arquivos principais:
 

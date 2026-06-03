@@ -714,6 +714,10 @@ tbody tr:last-child td {
   margin-bottom: 22px;
 }
 
+.general-stats.preventive-kpis {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
 .general-stats article {
   display: flex;
   align-items: center;
@@ -834,13 +838,109 @@ tbody tr:last-child td {
 }
 
 .preventive-filters {
-  grid-template-columns: minmax(260px, 1fr) 150px 150px 220px;
+  grid-template-columns: minmax(260px, 1fr) 220px 190px;
 }
 
 .muted-message {
   margin: 0;
   color: #667085;
   font-size: 13px;
+}
+
+.compliance-line-panel {
+  margin-bottom: 22px;
+  padding: 18px;
+  background: #ffffff;
+  border: 1px solid #edf0f4;
+  border-top: 4px solid var(--green);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+.compliance-line-title,
+.line-legend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.compliance-line-title strong {
+  display: block;
+  color: var(--purple);
+  font-size: 16px;
+}
+
+.compliance-line-title span {
+  display: block;
+  margin-top: 4px;
+  color: #667085;
+  font-size: 13px;
+}
+
+#adherenceLabel {
+  color: #1d4ed8;
+  font-size: 24px;
+}
+
+.compliance-line {
+  position: relative;
+  display: flex;
+  height: 18px;
+  margin: 18px 0 12px;
+  overflow: visible;
+  background: #eef2f6;
+  border-radius: 999px;
+}
+
+.line-segment {
+  display: block;
+  height: 100%;
+}
+
+.line-segment.on-time {
+  background: #22c55e;
+  border-radius: 999px 0 0 999px;
+}
+
+.line-segment.adherence {
+  background: #2563eb;
+}
+
+.line-segment.overdue {
+  background: #ef4444;
+  border-radius: 0 999px 999px 0;
+}
+
+.line-legend {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  color: #475467;
+  font-size: 13px;
+}
+
+.line-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.legend-dot.green {
+  background: #22c55e;
+}
+
+.legend-dot.red {
+  background: #ef4444;
+}
+
+.legend-dot.blue {
+  background: #2563eb;
 }
 
 .general-search {
@@ -1243,6 +1343,10 @@ tbody tr:last-child td {
   .summary-grid,
   .bottleneck-board,
   .general-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .general-stats.preventive-kpis {
     grid-template-columns: 1fr;
   }
 

@@ -4,10 +4,10 @@ const DEFAULT_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRGJV
 let sheetUrl = localStorage.getItem(SHEET_URL_KEY) || DEFAULT_SHEET_URL;
 let rawRows = [];
 let visibleRows = [];
+let sheetSummary = {};
 let searchTerm = "";
 let statusFilter = "all";
-let periodStart = "";
-let periodEnd = "";
+let branchFilter = "all";
 
 const sheetUrlInput = document.querySelector("#sheetUrlInput");
 const sheetStatus = document.querySelector("#sheetStatus");
@@ -31,13 +31,8 @@ document.querySelector("#preventiveSearch").addEventListener("input", (event) =>
   render();
 });
 
-document.querySelector("#preventiveStart").addEventListener("change", (event) => {
-  periodStart = event.target.value;
-  render();
-});
-
-document.querySelector("#preventiveEnd").addEventListener("change", (event) => {
-  periodEnd = event.target.value;
+document.querySelector("#preventiveBranchFilter").addEventListener("change", (event) => {
+  branchFilter = event.target.value;
   render();
 });
 
@@ -60,9 +55,12 @@ async function loadSheetData() {
     const response = await fetch(cacheBustedUrl(sheetUrl));
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const csv = await response.text();
-    rawRows = parseCsv(csv);
-    setStatus(`${rawRows.length} registro${rawRows.length === 1 ? "" : "s"} carregado${rawRows.length === 1 ? "" : "s"}.`);
+    const parsedRows = parseCsv(csv);
+    sheetSummary = extractSheetSummary(parsedRows);
+    rawRows = parsedRows.filter(isPreventiveRow);
+    setStatus(statusMessage());
     updateStatusOptions();
+    updateBranchOptions();
     render();
   } catch (error) {
     rawRows = [];
@@ -74,7 +72,8 @@ async function loadSheetData() {
 function render() {
   visibleRows = filteredRows();
   renderStats();
-  renderStatusBars();
+  renderComplianceLine();
+  renderBranchBars();
   renderRanking();
   renderTable();
 }
@@ -86,40 +85,70 @@ function filteredRows() {
     return (
       (!searchTerm || rowText.includes(searchTerm)) &&
       (statusFilter === "all" || rowStatus === statusFilter) &&
-      matchesPeriod(row)
+      (branchFilter === "all" || normalizedBranch(row) === branchFilter)
     );
   });
 }
 
 function renderStats() {
-  const done = visibleRows.filter((row) => isDoneStatus(normalizedStatus(row))).length;
-  const open = visibleRows.length - done;
-  const maxDays = visibleRows.reduce((max, row) => Math.max(max, extractDays(row)), 0);
+  const metrics = currentMetrics();
+  const dueSoon = visibleRows.filter(isDueSoon).length;
+  const maxDays = visibleRows.reduce((max, row) => Math.max(max, overdueDays(row)), 0);
+  const adherence = visibleRows.filter(isAdherent).length;
 
-  document.querySelector("#preventiveTotal").textContent = visibleRows.length;
-  document.querySelector("#preventiveOpen").textContent = open;
-  document.querySelector("#preventiveDone").textContent = done;
-  document.querySelector("#preventiveCritical").textContent = maxDays;
+  document.querySelector("#preventiveTotal").textContent = metrics.total;
+  document.querySelector("#preventiveOnTime").textContent = metrics.onTime;
+  document.querySelector("#preventiveOverdue").textContent = metrics.overdue;
+  document.querySelector("#preventiveDueSoon").textContent = dueSoon;
+  document.querySelector("#preventiveCritical").textContent = `${formatNumber(maxDays)}d`;
+  document.querySelector("#preventiveCompliance").textContent = adherence;
 }
 
-function renderStatusBars() {
-  const container = document.querySelector("#preventiveStatusBars");
+function renderComplianceLine() {
+  const total = visibleRows.length || 1;
+  const adherence = visibleRows.filter(isAdherent).length;
+  const onTime = visibleRows.filter((row) => !isOverdue(row) && !isAdherent(row)).length;
+  const overdue = visibleRows.filter((row) => isOverdue(row) && !isAdherent(row)).length;
+  const adherencePercent = visibleRows.length ? (adherence / visibleRows.length) * 100 : 0;
+
+  document.querySelector("#onTimeSegment").style.width = `${(onTime / total) * 100}%`;
+  document.querySelector("#adherenceSegment").style.width = `${(adherence / total) * 100}%`;
+  document.querySelector("#overdueSegment").style.width = `${(overdue / total) * 100}%`;
+  document.querySelector("#adherenceLabel").textContent = `${formatNumber(adherencePercent)}%`;
+}
+
+function currentMetrics() {
+  const useSourceSummary = !searchTerm && statusFilter === "all" && branchFilter === "all" && sheetSummary.total;
+  const overdue = useSourceSummary ? sheetSummary.overdue : visibleRows.filter(isOverdue).length;
+  const onTime = useSourceSummary ? sheetSummary.onTime : visibleRows.length - overdue;
+  const total = useSourceSummary ? sheetSummary.total : visibleRows.length;
+  const compliance = total ? (onTime / total) * 100 : 0;
+
+  return { total, onTime, overdue, compliance };
+}
+
+function renderBranchBars() {
+  const container = document.querySelector("#preventiveBranchBars");
   const totals = visibleRows.reduce((acc, row) => {
-    const status = normalizedStatus(row) || "Sem status";
-    acc[status] = (acc[status] || 0) + 1;
+    const branch = normalizedBranch(row) || "Sem filial";
+    const current = acc[branch] || { total: 0, risk: 0 };
+    current.total += 1;
+    if (isOverdue(row) || isDueSoon(row)) current.risk += 1;
+    acc[branch] = current;
     return acc;
   }, {});
-  const max = Math.max(...Object.values(totals), 1);
+  const max = Math.max(...Object.values(totals).map((item) => item.risk), 1);
 
   container.innerHTML = Object.entries(totals)
-    .sort((a, b) => b[1] - a[1])
-    .map(([status, value]) => `
+    .sort((a, b) => b[1].risk - a[1].risk)
+    .slice(0, 8)
+    .map(([branch, value]) => `
       <div class="bar-item">
         <div class="bar-meta">
-          <strong>${escapeHtml(status)}</strong>
-          <span>${value}</span>
+          <strong>${escapeHtml(branch)}</strong>
+          <span>${value.risk} em atenção · ${value.total} total</span>
         </div>
-        <div class="bar-track"><span style="width:${(value / max) * 100}%"></span></div>
+        <div class="bar-track"><span style="width:${(value.risk / max) * 100}%"></span></div>
       </div>
     `)
     .join("") || `<p class="muted-message">Nenhum dado para análise.</p>`;
@@ -128,7 +157,8 @@ function renderStatusBars() {
 function renderRanking() {
   const container = document.querySelector("#preventiveRanking");
   const rows = [...visibleRows]
-    .map((row) => ({ row, days: extractDays(row) }))
+    .map((row) => ({ row, days: overdueDays(row) }))
+    .filter((item) => item.days > 0)
     .sort((a, b) => b.days - a.days)
     .slice(0, 6);
 
@@ -138,7 +168,7 @@ function renderRanking() {
         <strong>${index + 1}</strong>
         <div>
           <span>${escapeHtml(primaryLabel(item.row))}</span>
-          <small>${item.days} dia${item.days === 1 ? "" : "s"} · ${escapeHtml(normalizedStatus(item.row) || "Sem status")}</small>
+          <small>${formatNumber(item.days)} dia${item.days === 1 ? "" : "s"} vencida · ${escapeHtml(normalizedBranch(item.row) || "Sem filial")}</small>
         </div>
       </div>
     `)
@@ -168,13 +198,10 @@ function updateStatusOptions() {
   select.innerHTML = `<option value="all">Todos os status</option>${statuses.map((status) => `<option value="${escapeHtml(status)}">${escapeHtml(status)}</option>`).join("")}`;
 }
 
-function matchesPeriod(row) {
-  if (!periodStart && !periodEnd) return true;
-  const date = extractDate(row);
-  if (!date) return true;
-  if (periodStart && date < toDate(periodStart)) return false;
-  if (periodEnd && date > toDate(periodEnd)) return false;
-  return true;
+function updateBranchOptions() {
+  const select = document.querySelector("#preventiveBranchFilter");
+  const branches = [...new Set(rawRows.map(normalizedBranch).filter(Boolean))].sort();
+  select.innerHTML = `<option value="all">Todas as filiais</option>${branches.map((branch) => `<option value="${escapeHtml(branch)}">${escapeHtml(branch)}</option>`).join("")}`;
 }
 
 function tableHeaders() {
@@ -182,7 +209,11 @@ function tableHeaders() {
 }
 
 function normalizedStatus(row) {
-  const key = findKey(row, ["status", "situação", "situacao", "etapa"]);
+  return isOverdue(row) ? "Vencida" : "Em dia";
+}
+
+function normalizedBranch(row) {
+  const key = findKey(row, ["filial"]);
   return key ? String(row[key] || "").trim() : "";
 }
 
@@ -192,20 +223,57 @@ function primaryLabel(row) {
 }
 
 function extractDays(row) {
-  const key = findKey(row, ["lead time", "dias", "prazo", "atraso", "total"]);
-  if (!key) return 0;
-  const value = String(row[key] || "").replace(",", ".").match(/\d+(\.\d+)?/);
-  return value ? Math.round(Number(value[0])) : 0;
+  return isOverdue(row) ? overdueDays(row) : dueInDays(row);
 }
 
-function extractDate(row) {
-  const key = findKey(row, ["data", "solicitação", "solicitacao", "execução", "execucao", "preventiva"]);
-  return key ? parseDate(row[key]) : null;
+function overdueDays(row) {
+  const key = findKey(row, ["vencida"]);
+  return key ? numberValue(row[key]) : 0;
 }
 
-function findKey(row, candidates) {
-  const keys = Object.keys(row);
-  return keys.find((key) => candidates.some((candidate) => normalize(key).includes(normalize(candidate))));
+function dueInDays(row) {
+  const key = findKey(row, ["vence em"]);
+  return key ? numberValue(row[key]) : 0;
+}
+
+function isOverdue(row) {
+  return overdueDays(row) > 0;
+}
+
+function isDueSoon(row) {
+  const due = dueInDays(row);
+  return !isOverdue(row) && due > 0 && due <= 30;
+}
+
+function isAdherent(row) {
+  const key = findKey(row, ["desvio"]);
+  return key ? Math.abs(numberValue(row[key])) <= 50 : false;
+}
+
+function isPreventiveRow(row) {
+  const plate = findKey(row, ["placa"]);
+  return Boolean(plate && String(row[plate]).trim());
+}
+
+function extractSheetSummary(rows) {
+  return rows.reduce((acc, row) => {
+    const labelKey = findKey(row, ["equipamento"]);
+    const valueKey = findKey(row, ["modelo"]);
+    if (!labelKey || !valueKey) return acc;
+
+    const label = normalize(row[labelKey]);
+    const value = numberValue(row[valueKey]);
+    if (label.includes("frota op")) acc.total = value;
+    if (label.includes("em dia")) acc.onTime = value;
+    if (label.includes("vencidas")) acc.overdue = value;
+    return acc;
+  }, {});
+}
+
+function statusMessage() {
+  const detailed = `${rawRows.length} equipamento${rawRows.length === 1 ? "" : "s"} detalhado${rawRows.length === 1 ? "" : "s"} carregado${rawRows.length === 1 ? "" : "s"}`;
+  if (!sheetSummary.total) return `${detailed}.`;
+  return `${detailed}. Resumo da frota: ${sheetSummary.total} equipamentos.`;
 }
 
 function parseCsv(text) {
@@ -272,24 +340,18 @@ function cacheBustedUrl(url) {
   return `${url}${separator}_=${Date.now()}`;
 }
 
-function parseDate(value) {
-  const text = String(value || "").trim();
-  if (!text) return null;
-  if (/^\d{4}-\d{2}-\d{2}/.test(text)) return toDate(text.slice(0, 10));
-  const match = text.match(/^(\d{1,2})[./-](\d{1,2})[./-](\d{2,4})$/);
-  if (!match) return null;
-  const year = Number(match[3].length === 2 ? `20${match[3]}` : match[3]);
-  return new Date(year, Number(match[2]) - 1, Number(match[1]));
+function findKey(row, candidates) {
+  const keys = Object.keys(row);
+  return keys.find((key) => candidates.some((candidate) => normalize(key).includes(normalize(candidate))));
 }
 
-function toDate(value) {
-  const [year, month, day] = value.split("-").map(Number);
-  return new Date(year, month - 1, day);
+function numberValue(value) {
+  const text = String(value || "").replace(/\./g, "").replace(",", ".").match(/-?\d+(\.\d+)?/);
+  return text ? Number(text[0]) : 0;
 }
 
-function isDoneStatus(status) {
-  const text = normalize(status);
-  return text.includes("conclu") || text.includes("execut") || text.includes("finaliz");
+function formatNumber(value) {
+  return new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 1 }).format(value || 0);
 }
 
 function normalize(value) {

@@ -10,6 +10,8 @@ Site estatico para acompanhamento de manutencao preventiva de maquinas, com foco
 - Indicadores com metas: lead time total 2,5 dias; solicitacao ate disponibilidade 0 dia; disponivel ate retirada 0,5 dia; retirada ate execucao 2 dias.
 - Metas exibidas nos cards superiores e no painel principal de gargalos.
 - Nova pagina `Painel geral das preventivas` preparada para ler Google Sheets publicado como CSV.
+- Indicadores da planilha diaria: frota monitorada, em dia, vencidas, vencem em ate 30 dias, maior atraso e aderencia.
+- Aderencia definida por desvio entre -50h e +50h em relacao ao vencimento.
 - Campo de status alinhado entre cadastro, painel e informacoes gerais.
 - Edicao e exclusao pelo painel principal.
 - Edicao e exclusao pela pagina de informacoes gerais.

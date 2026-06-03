@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Painel Geral das Preventivas | Multilixo</title>
-    <link rel="stylesheet" href="./styles.css?v=39" />
+    <link rel="stylesheet" href="./styles.css?v=43" />
   </head>
   <body class="general-page preventive-panel-page">
     <header class="general-header">
@@ -16,8 +16,8 @@
         </div>
       </div>
       <nav class="general-actions" aria-label="Ações">
-        <a class="outline-action" href="./index.html?v=39">Painel</a>
-        <a class="outline-action" href="./geral.html?v=39">Informações gerais</a>
+        <a class="outline-action" href="./index.html?v=43">Painel</a>
+        <a class="outline-action" href="./geral.html?v=43">Informações gerais</a>
         <button class="outline-action" id="refreshPreventivePanel" type="button">Atualizar dados</button>
         <button class="outline-action" id="exportPreventivePanel" type="button">Exportar Excel</button>
       </nav>
@@ -36,31 +36,60 @@
         <button class="primary-button" id="saveSheetUrl" type="button">Salvar fonte</button>
       </section>
 
-      <section class="general-stats" aria-label="Indicadores da planilha">
+      <section class="general-stats preventive-kpis" aria-label="Indicadores da planilha">
         <article>
           <span class="stat-icon blue" aria-hidden="true">#</span>
-          <div><strong id="preventiveTotal">0</strong><small>Total de preventivas</small></div>
-        </article>
-        <article>
-          <span class="stat-icon amber" aria-hidden="true">o</span>
-          <div><strong id="preventiveOpen">0</strong><small>Em aberto</small></div>
+          <div><strong id="preventiveTotal">0</strong><small>Frota monitorada</small></div>
         </article>
         <article>
           <span class="stat-icon green" aria-hidden="true">✓</span>
-          <div><strong id="preventiveDone">0</strong><small>Concluídas</small></div>
+          <div><strong id="preventiveOnTime">0</strong><small>Em dia</small></div>
         </article>
         <article>
           <span class="stat-icon red" aria-hidden="true">!</span>
-          <div><strong id="preventiveCritical">0</strong><small>Maior prazo em dias</small></div>
+          <div><strong id="preventiveOverdue">0</strong><small>Vencidas</small></div>
         </article>
+        <article>
+          <span class="stat-icon amber" aria-hidden="true">o</span>
+          <div><strong id="preventiveDueSoon">0</strong><small>Vencem em até 30 dias</small></div>
+        </article>
+        <article>
+          <span class="stat-icon red" aria-hidden="true">!</span>
+          <div><strong id="preventiveCritical">0</strong><small>Maior atraso</small></div>
+        </article>
+        <article>
+          <span class="stat-icon blue" aria-hidden="true">%</span>
+          <div><strong id="preventiveCompliance">0</strong><small>Em aderência ±50h</small></div>
+        </article>
+      </section>
+
+      <section class="compliance-line-panel" aria-label="Aderência da frota">
+        <div class="compliance-line-title">
+          <div>
+            <strong>Aderência geral da preventiva</strong>
+            <span>Verde: em dia · Azul: aderência entre -50h e +50h · Vermelho: vencidas</span>
+          </div>
+          <strong id="adherenceLabel">0%</strong>
+        </div>
+        <div class="compliance-line" aria-hidden="true">
+          <span class="line-segment on-time" id="onTimeSegment"></span>
+          <span class="line-segment adherence" id="adherenceSegment"></span>
+          <span class="line-segment overdue" id="overdueSegment"></span>
+        </div>
+        <div class="line-legend">
+          <span><i class="legend-dot green"></i>Em dia</span>
+          <span><i class="legend-dot blue"></i>Aderência</span>
+          <span><i class="legend-dot red"></i>Vencidas</span>
+        </div>
       </section>
 
       <section class="general-filters preventive-filters" aria-label="Filtros do painel geral">
         <div class="general-search">
           <input id="preventiveSearch" type="search" placeholder="Buscar por equipamento, placa, OS, status ou filial..." />
         </div>
-        <input id="preventiveStart" type="date" aria-label="Data inicial" />
-        <input id="preventiveEnd" type="date" aria-label="Data final" />
+        <select id="preventiveBranchFilter" aria-label="Filtro de filial">
+          <option value="all">Todas as filiais</option>
+        </select>
         <select id="preventiveStatusFilter" aria-label="Filtro de status">
           <option value="all">Todos os status</option>
         </select>
@@ -69,15 +98,15 @@
       <section class="analysis-grid" aria-label="Análises do painel geral">
         <article class="analysis-panel">
           <div class="analysis-title">
-            <h2>Status das preventivas</h2>
-            <small>Distribuição por status da planilha</small>
+            <h2>Preventivas por filial</h2>
+            <small>Quantidade de equipamentos vencidos ou em atenção</small>
           </div>
-          <div id="preventiveStatusBars" class="bar-list"></div>
+          <div id="preventiveBranchBars" class="bar-list"></div>
         </article>
         <article class="analysis-panel">
           <div class="analysis-title">
-            <h2>Maiores prazos</h2>
-            <small>Ranking por dias ou lead time identificado</small>
+            <h2>Maiores atrasos</h2>
+            <small>Ranking por dias vencidos da preventiva</small>
           </div>
           <div id="preventiveRanking" class="ranking-list"></div>
         </article>
@@ -97,6 +126,6 @@
       </section>
     </main>
 
-    <script src="./painel-preventivas.js?v=39"></script>
+    <script src="./painel-preventivas.js?v=43"></script>
   </body>
 </html>
