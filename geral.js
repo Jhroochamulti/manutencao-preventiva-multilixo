@@ -56,6 +56,12 @@ let statusFilter = "all";
 let bottleneckFilter = "all";
 let periodStart = "";
 let periodEnd = "";
+const INDICATOR_GOALS = {
+  leadTime: 2.5,
+  requestAvailable: 0,
+  availablePickup: 0,
+  pickupExecution: 2
+};
 
 document.querySelector("#searchInputGeneral").addEventListener("input", (event) => {
   searchTerm = event.target.value.trim().toLowerCase();
@@ -156,10 +162,23 @@ function filteredRows() {
 
 function renderStats(items) {
   const summary = calculateSummary(items);
-  document.querySelector("#statLeadTime").textContent = formatNumber(summary.leadTime);
-  document.querySelector("#statRequestAvailable").textContent = formatNumber(summary.requestAvailable);
-  document.querySelector("#statAvailablePickup").textContent = formatNumber(summary.availablePickup);
-  document.querySelector("#statPickupExecution").textContent = formatNumber(summary.pickupExecution);
+  updateGoalStat("#statLeadTime", summary.leadTime, INDICATOR_GOALS.leadTime);
+  updateGoalStat("#statRequestAvailable", summary.requestAvailable, INDICATOR_GOALS.requestAvailable);
+  updateGoalStat("#statAvailablePickup", summary.availablePickup, INDICATOR_GOALS.availablePickup);
+  updateGoalStat("#statPickupExecution", summary.pickupExecution, INDICATOR_GOALS.pickupExecution);
+}
+
+function updateGoalStat(selector, value, goal) {
+  const element = document.querySelector(selector);
+  if (!element) return;
+
+  element.textContent = formatNumber(value);
+  const card = element.closest("article");
+  if (!card) return;
+
+  const isAboveGoal = value > goal;
+  card.classList.toggle("above-goal", isAboveGoal);
+  card.classList.toggle("on-goal", !isAboveGoal);
 }
 
 function renderAnalysis(items) {
@@ -298,7 +317,7 @@ function renderRows(items) {
 }
 
 function editFromGeneral(id) {
-  window.location.href = `./index.html?v=33&edit=${encodeURIComponent(id)}#nova-preventiva`;
+  window.location.href = `./index.html?v=34&edit=${encodeURIComponent(id)}#nova-preventiva`;
 }
 
 function deleteFromGeneral(id) {

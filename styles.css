@@ -213,6 +213,21 @@ main {
   line-height: 1;
 }
 
+.metric.on-goal {
+  border-top-color: var(--green);
+  background: linear-gradient(180deg, #ffffff, rgba(191, 221, 37, 0.08));
+}
+
+.metric.above-goal {
+  border-color: rgba(241, 130, 37, 0.32);
+  border-top-color: var(--orange);
+  background: linear-gradient(180deg, rgba(241, 130, 37, 0.1), #ffffff);
+}
+
+.metric.above-goal strong {
+  color: var(--danger);
+}
+
 .workspace {
   display: grid;
   grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
@@ -705,6 +720,17 @@ tbody tr:last-child td {
   border-top-color: var(--orange);
 }
 
+.general-stats article.on-goal {
+  border-top-color: var(--green);
+  background: linear-gradient(180deg, #ffffff, rgba(191, 221, 37, 0.07));
+}
+
+.general-stats article.above-goal {
+  border-color: rgba(241, 130, 37, 0.32);
+  border-top-color: var(--orange);
+  background: linear-gradient(180deg, rgba(241, 130, 37, 0.09), #ffffff);
+}
+
 .stat-icon {
   width: 40px;
   height: 40px;
@@ -739,6 +765,10 @@ tbody tr:last-child td {
   color: var(--purple);
   font-size: 25px;
   line-height: 1;
+}
+
+.general-stats article.above-goal strong {
+  color: var(--danger);
 }
 
 .general-stats small {

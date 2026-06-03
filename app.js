@@ -53,6 +53,12 @@ let activeFilter = "all";
 let searchTerm = "";
 const inventoryRecords = Array.isArray(window.MULTILIXO_INVENTARIO) ? window.MULTILIXO_INVENTARIO : [];
 const inventoryByPlate = new Map(inventoryRecords.map((item) => [normalizePlate(item.placa), item]));
+const INDICATOR_GOALS = {
+  leadTime: 2.5,
+  almoxarifado: 0,
+  planejamento: 0,
+  execucao: 2
+};
 
 const form = document.querySelector("#maintenanceForm");
 const formPanel = document.querySelector("#formPanel");
@@ -322,13 +328,27 @@ function renderSummary() {
     ["execucao", averages.execucao]
   ].sort((a, b) => b[1] - a[1])[0];
 
+  const leadTime = totals.leadTime / count;
   document.querySelector("#stageWarehouse").textContent = formatNumber(averages.almoxarifado);
-  document.querySelector("#stageTotal").textContent = formatNumber(totals.leadTime / count);
+  document.querySelector("#stageTotal").textContent = formatNumber(leadTime);
   document.querySelector("#stageExecution").textContent = formatNumber(averages.execucao);
-  document.querySelector("#stageWarehouseTop").textContent = formatNumber(averages.almoxarifado);
-  document.querySelector("#stagePlannerTop").textContent = formatNumber(averages.planejamento);
-  document.querySelector("#stageExecutionTop").textContent = formatNumber(averages.execucao);
-  document.querySelector("#averageLeadTime").textContent = formatNumber(totals.leadTime / count);
+  updateGoalMetric("#stageWarehouseTop", averages.almoxarifado, INDICATOR_GOALS.almoxarifado);
+  updateGoalMetric("#stagePlannerTop", averages.planejamento, INDICATOR_GOALS.planejamento);
+  updateGoalMetric("#stageExecutionTop", averages.execucao, INDICATOR_GOALS.execucao);
+  updateGoalMetric("#averageLeadTime", leadTime, INDICATOR_GOALS.leadTime);
+}
+
+function updateGoalMetric(selector, value, goal) {
+  const element = document.querySelector(selector);
+  if (!element) return;
+
+  element.textContent = formatNumber(value);
+  const card = element.closest(".metric");
+  if (!card) return;
+
+  const isAboveGoal = value > goal;
+  card.classList.toggle("above-goal", isAboveGoal);
+  card.classList.toggle("on-goal", !isAboveGoal);
 }
 
 function renderTable(rows) {
