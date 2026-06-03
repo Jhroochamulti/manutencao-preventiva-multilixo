@@ -4,7 +4,7 @@ Projeto: Manutencao Preventiva de Maquinas - Multilixo
 
 Status: salvo e pronto para publicacao estatica no GitHub Pages.
 
-Versao final: v34.
+Versao final: v35.
 
 Ultimas atualizacoes:
 
@@ -14,6 +14,7 @@ Ultimas atualizacoes:
 - Corrigido retorno automatico dos exemplos depois de excluir todos os registros.
 - Base de inventario adicionada para preencher equipamento, filial, modelo e ano ao digitar a placa.
 - Metas adicionadas aos indicadores: lead time total 2,5 dias, solicitacao ate disponibilidade 0 dia, disponivel ate retirada 0 dia e retirada ate execucao 2 dias.
+- Metas exibidas tambem no painel principal de gargalos.
 
 Arquivos principais:
 

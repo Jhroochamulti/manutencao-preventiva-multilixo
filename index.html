@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Manutenção Preventiva de Máquinas | Multilixo</title>
-    <link rel="stylesheet" href="./styles.css?v=34" />
+    <link rel="stylesheet" href="./styles.css?v=35" />
   </head>
   <body>
     <header class="app-header">
@@ -12,7 +12,7 @@
         <img class="brand-logo" src="./assets/logo-multilixo.png" alt="Grupo Multilixo - Transportando Soluções, Gerando Valores" />
       </div>
       <nav class="top-actions" aria-label="Ações principais">
-        <a class="secondary-link" href="./geral.html?v=34">Informações gerais</a>
+        <a class="secondary-link" href="./geral.html?v=35">Informações gerais</a>
         <button class="icon-button" id="quickNewButton" type="button" title="Nova preventiva" aria-label="Nova preventiva">
           <span aria-hidden="true">+</span>
         </button>
@@ -165,19 +165,25 @@
               <span class="dot green"></span>
               <h3>Solicitação até disponibilização</h3>
               <strong id="stageWarehouse">0</strong>
-              <small>dias médios do pedido do material até ficar disponível para retirada</small>
+              <small>Meta: 0 dia</small>
             </article>
             <article>
               <span class="dot purple"></span>
               <h3>Lead time total</h3>
               <strong id="stageTotal">0</strong>
-              <small>dias médios da solicitação até a execução da preventiva</small>
+              <small>Meta: até 2,5 dias</small>
+            </article>
+            <article>
+              <span class="dot green"></span>
+              <h3>Disponível até retirada</h3>
+              <strong id="stagePlanner">0</strong>
+              <small>Meta: 0 dia</small>
             </article>
             <article>
               <span class="dot orange"></span>
               <h3>Retirada até execução</h3>
               <strong id="stageExecution">0</strong>
-              <small>dias médios da retirada do material até a preventiva executada</small>
+              <small>Meta: até 2 dias</small>
             </article>
           </div>
 
@@ -227,7 +233,7 @@
       </tr>
     </template>
 
-    <script src="./assets/inventario-data.js?v=34"></script>
-    <script src="./app.js?v=34"></script>
+    <script src="./assets/inventario-data.js?v=35"></script>
+    <script src="./app.js?v=35"></script>
   </body>
 </html>

@@ -329,9 +329,10 @@ function renderSummary() {
   ].sort((a, b) => b[1] - a[1])[0];
 
   const leadTime = totals.leadTime / count;
-  document.querySelector("#stageWarehouse").textContent = formatNumber(averages.almoxarifado);
-  document.querySelector("#stageTotal").textContent = formatNumber(leadTime);
-  document.querySelector("#stageExecution").textContent = formatNumber(averages.execucao);
+  updateGoalBoard("#stageWarehouse", averages.almoxarifado, INDICATOR_GOALS.almoxarifado);
+  updateGoalBoard("#stageTotal", leadTime, INDICATOR_GOALS.leadTime);
+  updateGoalBoard("#stagePlanner", averages.planejamento, INDICATOR_GOALS.planejamento);
+  updateGoalBoard("#stageExecution", averages.execucao, INDICATOR_GOALS.execucao);
   updateGoalMetric("#stageWarehouseTop", averages.almoxarifado, INDICATOR_GOALS.almoxarifado);
   updateGoalMetric("#stagePlannerTop", averages.planejamento, INDICATOR_GOALS.planejamento);
   updateGoalMetric("#stageExecutionTop", averages.execucao, INDICATOR_GOALS.execucao);
@@ -344,6 +345,19 @@ function updateGoalMetric(selector, value, goal) {
 
   element.textContent = formatNumber(value);
   const card = element.closest(".metric");
+  if (!card) return;
+
+  const isAboveGoal = value > goal;
+  card.classList.toggle("above-goal", isAboveGoal);
+  card.classList.toggle("on-goal", !isAboveGoal);
+}
+
+function updateGoalBoard(selector, value, goal) {
+  const element = document.querySelector(selector);
+  if (!element) return;
+
+  element.textContent = formatNumber(value);
+  const card = element.closest("article");
   if (!card) return;
 
   const isAboveGoal = value > goal;

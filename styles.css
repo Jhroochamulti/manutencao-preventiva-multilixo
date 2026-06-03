@@ -408,7 +408,7 @@ textarea {
 
 .bottleneck-board {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
   margin-bottom: 18px;
 }
@@ -419,6 +419,17 @@ textarea {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: linear-gradient(180deg, #ffffff, #fbfcf5);
+}
+
+.bottleneck-board article.on-goal {
+  border-top: 4px solid var(--green);
+  background: linear-gradient(180deg, #ffffff, rgba(191, 221, 37, 0.08));
+}
+
+.bottleneck-board article.above-goal {
+  border-color: rgba(241, 130, 37, 0.32);
+  border-top: 4px solid var(--orange);
+  background: linear-gradient(180deg, rgba(241, 130, 37, 0.1), #ffffff);
 }
 
 .dot {
@@ -448,6 +459,10 @@ textarea {
 .bottleneck-board strong {
   display: block;
   font-size: 32px;
+}
+
+.bottleneck-board article.above-goal strong {
+  color: var(--danger);
 }
 
 .bottleneck-board small {
