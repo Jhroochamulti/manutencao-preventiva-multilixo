@@ -4,7 +4,7 @@ Projeto: Manutencao Preventiva de Maquinas - Multilixo
 
 Status: salvo e pronto para publicacao estatica no GitHub Pages.
 
-Versao final: v50.
+Versao final: v51.
 
 Ultimas atualizacoes:
 
@@ -28,6 +28,7 @@ Ultimas atualizacoes:
 - Aderencia exibida junto da barra principal, entre em dia e vencidas.
 - Aderencia mantida dentro da barra como faixa azul sobreposta na janela de vencimento, sem alterar a base verde/vermelha.
 - Percentual de vencidas reposicionado para nao ser coberto pela faixa de aderencia.
+- Aderencia movida para cima, fora da barra principal, para nao sobrepor percentuais.
 
 Arquivos principais:
 
