@@ -416,7 +416,7 @@ function renderRows(items) {
 }
 
 function editFromGeneral(id) {
-  window.location.href = `./index.html?v=53&edit=${encodeURIComponent(id)}#nova-preventiva`;
+  window.location.href = `./index.html?v=54&edit=${encodeURIComponent(id)}#nova-preventiva`;
 }
 
 async function deleteFromGeneral(id) {
@@ -508,12 +508,25 @@ function stageClass(value, target) {
 
 function diffDays(start, end) {
   if (!start || !end) return null;
-  return Math.round((toDate(end) - toDate(start)) / 86400000);
+  const startDate = toDate(start);
+  const endDate = toDate(end);
+  if (!startDate || !endDate) return null;
+
+  return Math.round((endDate - startDate) / 86400000);
 }
 
 function toDate(value) {
-  const [year, month, day] = value.split("-").map(Number);
-  return new Date(year, month - 1, day);
+  if (!value) return null;
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    const [year, month, day] = value.split("-").map(Number);
+    return new Date(year, month - 1, day);
+  }
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return null;
+
+  return new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
 }
 
 function todayValue() {
@@ -523,7 +536,10 @@ function todayValue() {
 
 function formatDate(value) {
   if (!value) return "-";
-  return new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" }).format(toDate(value));
+  const date = toDate(value);
+  if (!date) return "-";
+
+  return new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" }).format(date);
 }
 
 function formatNumber(value) {
