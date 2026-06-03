@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Manutenção Preventiva | Informações Gerais</title>
+    <link rel="stylesheet" href="./styles.css?v=33" />
+  </head>
+  <body class="general-page">
+    <header class="general-header">
+      <div class="general-title">
+        <span class="tool-icon" aria-hidden="true">+</span>
+        <div>
+          <h1>Manutenção preventiva</h1>
+          <p>Controle de gargalos e rastreamento</p>
+        </div>
+      </div>
+      <nav class="general-actions" aria-label="Ações">
+        <a class="outline-action" href="./index.html?v=33">Painel</a>
+        <button class="outline-action" id="exportButton" type="button">Exportar Excel</button>
+        <button class="outline-action" id="exportPdfGeneralButton" type="button">Exportar PDF</button>
+        <a class="blue-action" href="./index.html?v=33#nova-preventiva">+ Nova preventiva</a>
+      </nav>
+    </header>
+
+    <main class="general-main">
+      <section class="general-stats" aria-label="Resumo das preventivas">
+        <article>
+          <span class="stat-icon blue" aria-hidden="true">#</span>
+          <div><strong id="statLeadTime">0</strong><small>Lead time total</small></div>
+        </article>
+        <article>
+          <span class="stat-icon amber" aria-hidden="true">o</span>
+          <div><strong id="statRequestAvailable">0</strong><small>Solicitação até disponibilidade</small></div>
+        </article>
+        <article>
+          <span class="stat-icon green" aria-hidden="true">✓</span>
+          <div><strong id="statAvailablePickup">0</strong><small>Disponível até retirada</small></div>
+        </article>
+        <article>
+          <span class="stat-icon red" aria-hidden="true">!</span>
+          <div><strong id="statPickupExecution">0</strong><small>Retirada até execução</small></div>
+        </article>
+      </section>
+
+      <section class="general-filters" aria-label="Filtros">
+        <div class="general-search">
+          <input id="searchInputGeneral" type="search" placeholder="Buscar por equipamento, placa ou preventiva..." />
+        </div>
+        <input id="periodStart" type="date" aria-label="Data inicial" />
+        <input id="periodEnd" type="date" aria-label="Data final" />
+        <select id="statusFilter" aria-label="Filtro de status">
+          <option value="all">Todos os status</option>
+          <option value="Aguardando Material">Aguardando Material</option>
+          <option value="Material Disponível">Material Disponível</option>
+          <option value="Material Retirado">Material Retirado</option>
+          <option value="Concluída">Concluída</option>
+        </select>
+        <select id="bottleneckFilter" aria-label="Filtro de gargalo">
+          <option value="all">Todos os gargalos</option>
+          <option value="requestAvailable">Solicitação até disponibilidade</option>
+          <option value="availablePickup">Disponível até retirada</option>
+          <option value="pickupExecution">Retirada até execução</option>
+        </select>
+      </section>
+
+      <section class="analysis-grid" aria-label="Análises de gargalos">
+        <article class="analysis-panel">
+          <div class="analysis-title">
+            <h2>Distribuição dos gargalos</h2>
+            <small>Quantidade de equipamentos por etapa crítica</small>
+          </div>
+          <div id="bottleneckBars" class="bar-list"></div>
+        </article>
+        <article class="analysis-panel">
+          <div class="analysis-title">
+            <h2>Maiores gaps</h2>
+            <small>Ranking por dias parados na etapa atual ou concluída</small>
+          </div>
+          <div id="gapRanking" class="ranking-list"></div>
+        </article>
+      </section>
+
+      <section class="spreadsheet-card" aria-label="Tabela de informações gerais">
+        <div class="spreadsheet-wrap">
+          <table class="spreadsheet-table">
+            <thead>
+              <tr>
+                <th rowspan="2">Equipamento</th>
+                <th rowspan="2">Placa</th>
+                <th rowspan="2">Filial</th>
+                <th rowspan="2">Modelo</th>
+                <th rowspan="2">Ano</th>
+                <th rowspan="2">Preventiva</th>
+                <th rowspan="2">Status</th>
+                <th rowspan="2">Observações</th>
+                <th rowspan="2">Solicitação</th>
+                <th rowspan="2">Disponível</th>
+                <th rowspan="2">Retirada</th>
+                <th rowspan="2">Execução</th>
+                <th colspan="4">
+                  Dias por etapa
+                  <span class="mini-legend"><i class="ok"></i>OK <i class="attention"></i>Atenção <i class="bottleneck"></i>Gargalo</span>
+                </th>
+                <th colspan="3">Atrasos</th>
+                <th rowspan="2">Ações</th>
+              </tr>
+              <tr>
+                <th>Solic-Disp</th>
+                <th>Disp-Retir</th>
+                <th>Retir-Exec</th>
+                <th>Total</th>
+                <th>Solic-Retir</th>
+                <th>Atraso Disp.</th>
+                <th>Atraso Total</th>
+              </tr>
+            </thead>
+            <tbody id="generalTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <template id="generalRowTemplate">
+      <tr>
+        <td data-label="Equipamento"></td>
+        <td data-label="Placa"></td>
+        <td data-label="Filial"></td>
+        <td data-label="Modelo"></td>
+        <td data-label="Ano"></td>
+        <td data-label="Preventiva"></td>
+        <td data-label="Status"></td>
+        <td data-label="Observações"></td>
+        <td data-label="Solicitação"></td>
+        <td data-label="Disponível"></td>
+        <td data-label="Retirada"></td>
+        <td data-label="Execução"></td>
+        <td data-label="Solic-Disp"></td>
+        <td data-label="Disp-Retir"></td>
+        <td data-label="Retir-Exec"></td>
+        <td data-label="Total"></td>
+        <td data-label="Solic-Retir"></td>
+        <td data-label="Atraso Disp."></td>
+        <td data-label="Atraso Total"></td>
+        <td data-label="Ações"></td>
+      </tr>
+    </template>
+
+    <script src="./geral.js?v=33"></script>
+  </body>
+</html>

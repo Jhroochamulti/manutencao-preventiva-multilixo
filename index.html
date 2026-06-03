@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Manutenção Preventiva de Máquinas | Multilixo</title>
+    <link rel="stylesheet" href="./styles.css?v=33" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="brand" aria-label="Grupo Multilixo">
+        <img class="brand-logo" src="./assets/logo-multilixo.png" alt="Grupo Multilixo - Transportando Soluções, Gerando Valores" />
+      </div>
+      <nav class="top-actions" aria-label="Ações principais">
+        <a class="secondary-link" href="./geral.html?v=33">Informações gerais</a>
+        <button class="icon-button" id="quickNewButton" type="button" title="Nova preventiva" aria-label="Nova preventiva">
+          <span aria-hidden="true">+</span>
+        </button>
+        <button class="primary-button" id="openFormButton" type="button">Nova preventiva</button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="dashboard-band">
+        <div class="dashboard-copy">
+          <p class="eyebrow">Gestão de SLA operacional</p>
+          <h2>Manutenção preventiva de máquinas</h2>
+          <p>
+            Registre cada etapa, acompanhe os prazos em dias e identifique onde o fluxo
+            está travando entre solicitação, disponibilização, retirada e execução.
+          </p>
+        </div>
+        <div class="summary-grid" aria-label="Indicadores gerais">
+          <article class="metric">
+            <span>Lead time total</span>
+            <strong id="averageLeadTime">0</strong>
+            <small>dias da solicitação até a execução</small>
+          </article>
+          <article class="metric warning">
+            <span>Solicitação até disponibilidade</span>
+            <strong id="stageWarehouseTop">0</strong>
+            <small>dias médios</small>
+          </article>
+          <article class="metric">
+            <span>Disponível até retirada</span>
+            <strong id="stagePlannerTop">0</strong>
+            <small>dias médios</small>
+          </article>
+          <article class="metric">
+            <span>Retirada até execução</span>
+            <strong id="stageExecutionTop">0</strong>
+            <small>dias médios</small>
+          </article>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <aside class="form-panel" id="formPanel">
+          <div class="panel-title">
+            <h2 id="formTitle">Nova preventiva</h2>
+            <button class="icon-button compact" id="closeFormButton" type="button" title="Fechar formulario" aria-label="Fechar formulario">x</button>
+          </div>
+
+          <form id="maintenanceForm">
+            <input type="hidden" id="recordId" />
+
+            <label>
+              Equipamento
+              <input id="machine" name="machine" type="text" placeholder="Preenchido pela placa ou informe manualmente" required />
+            </label>
+
+            <label>
+              Placa
+              <input id="fleet" name="fleet" type="text" list="plateOptions" placeholder="Ex.: CSY5362" required autocomplete="off" />
+              <small class="field-helper" id="inventoryStatus">Digite a placa para buscar equipamento, filial, modelo e ano.</small>
+            </label>
+            <datalist id="plateOptions"></datalist>
+
+            <label>
+              Filial
+              <input id="branch" name="branch" type="text" placeholder="Ex.: Ecoparque" />
+            </label>
+
+            <label>
+              Modelo
+              <input id="model" name="model" type="text" placeholder="Ex.: Volvo EC210" />
+            </label>
+
+            <label>
+              Ano
+              <input id="year" name="year" type="number" min="1950" max="2100" placeholder="Ex.: 2022" />
+            </label>
+
+            <label>
+              Tipo de preventiva
+              <select id="serviceType" name="serviceType" required>
+                <option value="Troca de óleo do motor">Troca de óleo do motor</option>
+                <option value="Troca de filtros">Troca de filtros</option>
+                <option value="Óleo + filtros">Óleo + filtros</option>
+                <option value="Sistema hidráulico">Sistema hidráulico</option>
+                <option value="Transmissão">Transmissão</option>
+              </select>
+            </label>
+
+            <label>
+              Status
+              <select id="status" name="status" required>
+                <option value="Aguardando Material">Aguardando material</option>
+                <option value="Material Disponível">Material disponível</option>
+                <option value="Material Retirado">Material retirado</option>
+                <option value="Concluída">Concluída</option>
+              </select>
+            </label>
+
+            <div class="date-grid">
+              <label>
+                Solicitação ao almoxarifado
+                <input id="requestDate" name="requestDate" type="date" required />
+              </label>
+              <label>
+                Disponibilização pelo almoxarifado
+                <input id="availableDate" name="availableDate" type="date" />
+              </label>
+              <label>
+                Retirada pelo planejador
+                <input id="pickupDate" name="pickupDate" type="date" />
+              </label>
+              <label>
+                Execução da preventiva
+                <input id="executionDate" name="executionDate" type="date" />
+              </label>
+            </div>
+
+            <label>
+              Observações
+              <textarea id="notes" name="notes" rows="3" placeholder="Material pendente, causa do atraso, responsável..."></textarea>
+            </label>
+
+            <div class="form-actions">
+              <button class="secondary-button" id="resetFormButton" type="reset">Limpar</button>
+              <button class="primary-button" type="submit">Salvar</button>
+            </div>
+          </form>
+        </aside>
+
+        <section class="content-panel">
+          <div class="toolbar">
+            <div class="search-box">
+              <input id="searchInput" type="search" placeholder="Buscar equipamento, placa ou preventiva" />
+            </div>
+            <div class="export-tools" aria-label="Exportações">
+              <span>Exportar</span>
+              <button id="exportPanelButton" type="button">Excel</button>
+              <button id="exportPdfButton" type="button">PDF</button>
+            </div>
+            <div class="filter-group" aria-label="Filtro de gargalo">
+              <button class="filter-button active" type="button" data-filter="all">Todos</button>
+              <button class="filter-button" type="button" data-filter="almoxarifado">Solicitação até disponível</button>
+              <button class="filter-button" type="button" data-filter="execucao">Retirada até execução</button>
+            </div>
+          </div>
+
+          <div class="bottleneck-board" aria-label="Gargalos por etapa">
+            <article>
+              <span class="dot green"></span>
+              <h3>Solicitação até disponibilização</h3>
+              <strong id="stageWarehouse">0</strong>
+              <small>dias médios do pedido do material até ficar disponível para retirada</small>
+            </article>
+            <article>
+              <span class="dot purple"></span>
+              <h3>Lead time total</h3>
+              <strong id="stageTotal">0</strong>
+              <small>dias médios da solicitação até a execução da preventiva</small>
+            </article>
+            <article>
+              <span class="dot orange"></span>
+              <h3>Retirada até execução</h3>
+              <strong id="stageExecution">0</strong>
+              <small>dias médios da retirada do material até a preventiva executada</small>
+            </article>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Equipamento</th>
+                  <th>Preventiva</th>
+                  <th>Solicitação</th>
+                  <th>Disponível</th>
+                  <th>Retirada</th>
+                  <th>Execução</th>
+                  <th>Solic. -> Disp.</th>
+                  <th>Disp. -> Ret.</th>
+                  <th>Ret. -> Exec.</th>
+                  <th>Total</th>
+                  <th>Gargalo</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="recordsTable"></tbody>
+            </table>
+            <div class="empty-state" id="emptyState">
+              <strong>Nenhuma preventiva cadastrada</strong>
+              <p>Adicione registros para ver os gargalos por etapa.</p>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <template id="rowTemplate">
+      <tr>
+        <td data-label="Equipamento"></td>
+        <td data-label="Preventiva"></td>
+        <td data-label="Solicitação"></td>
+        <td data-label="Disponível"></td>
+        <td data-label="Retirada"></td>
+        <td data-label="Execução"></td>
+        <td data-label="Solic. -> Disp."></td>
+        <td data-label="Disp. -> Ret."></td>
+        <td data-label="Ret. -> Exec."></td>
+        <td data-label="Total"></td>
+        <td data-label="Gargalo"></td>
+        <td data-label="Ações"></td>
+      </tr>
+    </template>
+
+    <script src="./assets/inventario-data.js?v=33"></script>
+    <script src="./app.js?v=33"></script>
+  </body>
+</html>
