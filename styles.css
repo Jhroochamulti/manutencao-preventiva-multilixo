@@ -930,8 +930,18 @@ button.line-segment:hover {
 }
 
 .line-segment.overdue {
+  position: relative;
   background: #ef4444;
   border-radius: 0 999px 999px 0;
+}
+
+.line-segment.overdue span {
+  position: absolute;
+  right: 8px;
+  z-index: 4;
+  width: max-content;
+  max-width: none;
+  padding: 0;
 }
 
 .adherence-overlay {
@@ -953,10 +963,16 @@ button.line-segment:hover {
 }
 
 .adherence-overlay span {
-  max-width: 100%;
-  overflow: hidden;
-  padding: 0 4px;
-  text-overflow: ellipsis;
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  max-width: none;
+  overflow: visible;
+  padding: 0;
+  color: #1d4ed8;
+  text-overflow: clip;
+  text-shadow: none;
+  transform: translateX(-50%);
   white-space: nowrap;
   pointer-events: none;
 }
