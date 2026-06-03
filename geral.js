@@ -1,4 +1,6 @@
 const STORAGE_KEY = "multilixo-preventivas";
+const EDIT_KEY_STORAGE = "multilixo-edit-key";
+const SHARED_API_URL = "https://script.google.com/macros/s/AKfycbzXhMpVZQeFS4PEujgoNT47IKeIfbJ1G_PxEy7cPEuubEvEuEu5T9DoIHbh9UV5J-oZ/exec";
 
 const fallbackRecords = [
   {
@@ -48,7 +50,7 @@ const fallbackRecords = [
   }
 ];
 
-let panelRecords = loadPanelRecords();
+let panelRecords = [];
 let rows = recordsToRows(panelRecords);
 
 let searchTerm = "";
@@ -91,16 +93,89 @@ document.querySelector("#periodEnd").addEventListener("change", (event) => {
 document.querySelector("#exportButton").addEventListener("click", exportCsv);
 document.querySelector("#exportPdfGeneralButton").addEventListener("click", exportGeneralPdf);
 
-function loadPanelRecords() {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved !== null) return JSON.parse(saved);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(fallbackRecords));
-  return fallbackRecords;
+async function loadPanelRecords() {
+  try {
+    const result = await sharedRequest("list");
+    panelRecords = Array.isArray(result.records) ? result.records : [];
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(panelRecords));
+  } catch (error) {
+    console.warn("Usando dados locais porque a planilha compartilhada não respondeu.", error);
+    panelRecords = readLocalRecords().filter((record) => !String(record.id || "").startsWith("mlx-default-"));
+  }
+
+  rows = recordsToRows(panelRecords);
 }
 
 function refreshFromPanelRecords() {
-  panelRecords = loadPanelRecords();
   rows = recordsToRows(panelRecords);
+}
+
+function readLocalRecords() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : [];
+  } catch (error) {
+    console.warn("Dados locais inválidos.", error);
+    return [];
+  }
+}
+
+function sharedRequest(action, payload = {}) {
+  return new Promise((resolve, reject) => {
+    const callbackName = `multilixoCallback${Date.now()}${Math.floor(Math.random() * 100000)}`;
+    const script = document.createElement("script");
+    const params = new URLSearchParams({ action, callback: callbackName });
+    const protectedActions = ["create", "update", "delete"];
+
+    if (protectedActions.includes(action) && !payload.editKey) {
+      const editKey = getEditKey();
+      if (!editKey) {
+        reject(new Error("Chave de edição não informada."));
+        return;
+      }
+      params.set("editKey", editKey);
+    }
+
+    Object.entries(payload).forEach(([key, value]) => {
+      params.set(key, value ?? "");
+    });
+
+    const cleanup = () => {
+      delete window[callbackName];
+      script.remove();
+    };
+
+    window[callbackName] = (data) => {
+      cleanup();
+      if (data && data.ok) {
+        resolve(data);
+      } else {
+        reject(new Error((data && data.error) || "Resposta inválida da planilha."));
+      }
+    };
+
+    script.onerror = () => {
+      cleanup();
+      reject(new Error("Falha de comunicação com a planilha."));
+    };
+
+    script.src = `${SHARED_API_URL}?${params.toString()}`;
+    document.body.appendChild(script);
+  });
+}
+
+function getEditKey() {
+  const savedKey = sessionStorage.getItem(EDIT_KEY_STORAGE);
+  if (savedKey) return savedKey;
+
+  const typedKey = prompt("Digite a chave de edição autorizada:");
+  const cleanKey = String(typedKey || "").trim();
+
+  if (cleanKey) {
+    sessionStorage.setItem(EDIT_KEY_STORAGE, cleanKey);
+  }
+
+  return cleanKey;
 }
 
 function recordsToRows(records) {
@@ -317,17 +392,22 @@ function renderRows(items) {
 }
 
 function editFromGeneral(id) {
-  window.location.href = `./index.html?v=51&edit=${encodeURIComponent(id)}#nova-preventiva`;
+  window.location.href = `./index.html?v=52&edit=${encodeURIComponent(id)}#nova-preventiva`;
 }
 
-function deleteFromGeneral(id) {
+async function deleteFromGeneral(id) {
   const record = panelRecords.find((item) => item.id === id);
   if (!record) return;
 
-  panelRecords = panelRecords.filter((item) => item.id !== id);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(panelRecords));
-  rows = recordsToRows(panelRecords);
-  render();
+  try {
+    await sharedRequest("delete", { id });
+    panelRecords = panelRecords.filter((item) => item.id !== id);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(panelRecords));
+    rows = recordsToRows(panelRecords);
+    render();
+  } catch (error) {
+    alert(`Não foi possível excluir na planilha compartilhada: ${error.message}`);
+  }
 }
 
 function matchesPeriod(item) {
@@ -572,4 +652,4 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-render();
+loadPanelRecords().then(render);

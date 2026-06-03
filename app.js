@@ -1,4 +1,6 @@
 const STORAGE_KEY = "multilixo-preventivas";
+const EDIT_KEY_STORAGE = "multilixo-edit-key";
+const SHARED_API_URL = "https://script.google.com/macros/s/AKfycbzXhMpVZQeFS4PEujgoNT47IKeIfbJ1G_PxEy7cPEuubEvEuEu5T9DoIHbh9UV5J-oZ/exec";
 
 const defaultRecords = [
   {
@@ -48,7 +50,7 @@ const defaultRecords = [
   }
 ];
 
-let records = readRecords();
+let records = [];
 let activeFilter = "all";
 let searchTerm = "";
 const inventoryRecords = Array.isArray(window.MULTILIXO_INVENTARIO) ? window.MULTILIXO_INVENTARIO : [];
@@ -116,7 +118,7 @@ document.querySelectorAll(".filter-button").forEach((button) => {
   });
 });
 
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const formData = new FormData(form);
@@ -147,17 +149,26 @@ form.addEventListener("submit", (event) => {
   }
 
   const existingIndex = records.findIndex((item) => item.id === record.id);
-  if (existingIndex >= 0) {
-    records[existingIndex] = record;
-  } else {
-    records.unshift(record);
-  }
+  const action = existingIndex >= 0 ? "update" : "create";
 
-  persist();
-  form.reset();
-  document.querySelector("#recordId").value = "";
-  formTitle.textContent = "Nova preventiva";
-  render();
+  try {
+    const result = await sharedRequest(action, record);
+    const savedRecord = result.record || record;
+
+    if (existingIndex >= 0) {
+      records[existingIndex] = savedRecord;
+    } else {
+      records.unshift(savedRecord);
+    }
+
+    persistLocal();
+    form.reset();
+    document.querySelector("#recordId").value = "";
+    formTitle.textContent = "Nova preventiva";
+    render();
+  } catch (error) {
+    alert(`Não foi possível salvar na planilha compartilhada: ${error.message}`);
+  }
 });
 
 if (window.location.hash === "#nova-preventiva") {
@@ -165,9 +176,6 @@ if (window.location.hash === "#nova-preventiva") {
 }
 
 const editIdFromUrl = new URLSearchParams(window.location.search).get("edit");
-if (editIdFromUrl) {
-  setTimeout(() => editRecord(editIdFromUrl), 120);
-}
 
 function openPreventiveForm() {
   formPanel.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -218,15 +226,88 @@ function normalizePlate(value) {
   return String(value || "").replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
 }
 
-function readRecords() {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved) return JSON.parse(saved);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultRecords));
-  return defaultRecords;
+async function loadRecords() {
+  try {
+    const result = await sharedRequest("list");
+    records = Array.isArray(result.records) ? result.records : [];
+
+    persistLocal();
+  } catch (error) {
+    console.warn("Usando dados locais porque a planilha compartilhada não respondeu.", error);
+    records = readLocalRecords().filter((record) => !String(record.id || "").startsWith("mlx-default-"));
+  }
 }
 
-function persist() {
+function readLocalRecords() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : [];
+  } catch (error) {
+    console.warn("Dados locais inválidos.", error);
+    return [];
+  }
+}
+
+function persistLocal() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+}
+
+function sharedRequest(action, payload = {}) {
+  return new Promise((resolve, reject) => {
+    const callbackName = `multilixoCallback${Date.now()}${Math.floor(Math.random() * 100000)}`;
+    const script = document.createElement("script");
+    const params = new URLSearchParams({ action, callback: callbackName });
+    const protectedActions = ["create", "update", "delete"];
+
+    if (protectedActions.includes(action) && !payload.editKey) {
+      const editKey = getEditKey();
+      if (!editKey) {
+        reject(new Error("Chave de edição não informada."));
+        return;
+      }
+      params.set("editKey", editKey);
+    }
+
+    Object.entries(payload).forEach(([key, value]) => {
+      params.set(key, value ?? "");
+    });
+
+    const cleanup = () => {
+      delete window[callbackName];
+      script.remove();
+    };
+
+    window[callbackName] = (data) => {
+      cleanup();
+      if (data && data.ok) {
+        resolve(data);
+      } else {
+        reject(new Error((data && data.error) || "Resposta inválida da planilha."));
+      }
+    };
+
+    script.onerror = () => {
+      cleanup();
+      reject(new Error("Falha de comunicação com a planilha."));
+    };
+
+    script.src = `${SHARED_API_URL}?${params.toString()}`;
+    document.body.appendChild(script);
+  });
+}
+
+function getEditKey() {
+  const savedKey = sessionStorage.getItem(EDIT_KEY_STORAGE);
+  if (savedKey) return savedKey;
+
+  const typedKey = prompt("Digite a chave de edição autorizada:");
+  const cleanKey = String(typedKey || "").trim();
+
+  if (cleanKey) {
+    sessionStorage.setItem(EDIT_KEY_STORAGE, cleanKey);
+  }
+
+  return cleanKey;
 }
 
 function datesAreSequential(record) {
@@ -431,13 +512,18 @@ function editRecord(id) {
   formPanel.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function deleteRecord(id) {
+async function deleteRecord(id) {
   const record = records.find((item) => item.id === id);
   if (!record) return;
 
-  records = records.filter((item) => item.id !== id);
-  persist();
-  render();
+  try {
+    await sharedRequest("delete", { id });
+    records = records.filter((item) => item.id !== id);
+    persistLocal();
+    render();
+  } catch (error) {
+    alert(`Não foi possível excluir na planilha compartilhada: ${error.message}`);
+  }
 }
 
 function dateCell(date, days) {
@@ -677,4 +763,10 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-render();
+loadRecords().then(() => {
+  render();
+
+  if (editIdFromUrl) {
+    setTimeout(() => editRecord(editIdFromUrl), 120);
+  }
+});
