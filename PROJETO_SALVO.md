@@ -4,7 +4,7 @@ Projeto: Manutencao Preventiva de Maquinas - Multilixo
 
 Status: salvo e pronto para publicacao estatica no GitHub Pages.
 
-Versao final: v46.
+Versao final: v49.
 
 Ultimas atualizacoes:
 
@@ -24,6 +24,9 @@ Ultimas atualizacoes:
 - Grafico de aderencia com percentual em cada faixa e quantidade no hover.
 - Grafico ajustado para manter em dia e vencidas como base, com aderencia ±50h sobreposta em azul.
 - Faixa azul de aderencia posicionada na transicao entre em dia e vencidas.
+- Atrasos do painel geral tratados em horas; preventivas por filial contam apenas vencidas; clique na faixa vermelha filtra equipamentos vencidos.
+- Aderencia exibida junto da barra principal, entre em dia e vencidas.
+- Aderencia mantida dentro da barra como faixa azul sobreposta na janela de vencimento, sem alterar a base verde/vermelha.
 
 Arquivos principais:
 

@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Painel Geral das Preventivas | Multilixo</title>
-    <link rel="stylesheet" href="./styles.css?v=46" />
+    <link rel="stylesheet" href="./styles.css?v=49" />
   </head>
   <body class="general-page preventive-panel-page">
     <header class="general-header">
@@ -16,8 +16,8 @@
         </div>
       </div>
       <nav class="general-actions" aria-label="Ações">
-        <a class="outline-action" href="./index.html?v=46">Painel</a>
-        <a class="outline-action" href="./geral.html?v=46">Informações gerais</a>
+        <a class="outline-action" href="./index.html?v=49">Painel</a>
+        <a class="outline-action" href="./geral.html?v=49">Informações gerais</a>
         <button class="outline-action" id="refreshPreventivePanel" type="button">Atualizar dados</button>
         <button class="outline-action" id="exportPreventivePanel" type="button">Exportar Excel</button>
       </nav>
@@ -51,11 +51,11 @@
         </article>
         <article>
           <span class="stat-icon amber" aria-hidden="true">o</span>
-          <div><strong id="preventiveDueSoon">0</strong><small>Vencem em até 30 dias</small></div>
+          <div><strong id="preventiveDueSoon">0</strong><small>Vencem em até 50h</small></div>
         </article>
         <article>
           <span class="stat-icon red" aria-hidden="true">!</span>
-          <div><strong id="preventiveCritical">0</strong><small>Maior atraso</small></div>
+          <div><strong id="preventiveCritical">0</strong><small>Maior atraso em horas</small></div>
         </article>
         <article>
           <span class="stat-icon blue" aria-hidden="true">%</span>
@@ -73,7 +73,7 @@
         </div>
         <div class="compliance-line" aria-label="Distribuição de preventivas">
           <span class="line-segment on-time" id="onTimeSegment"><span id="onTimePercent">0%</span></span>
-          <span class="line-segment overdue" id="overdueSegment"><span id="overduePercent">0%</span></span>
+          <button class="line-segment overdue" id="overdueSegment" type="button"><span id="overduePercent">0%</span></button>
           <span class="adherence-overlay" id="adherenceSegment"><span id="adherencePercent">0%</span></span>
         </div>
         <div class="line-legend">
@@ -99,14 +99,14 @@
         <article class="analysis-panel">
           <div class="analysis-title">
             <h2>Preventivas por filial</h2>
-            <small>Quantidade de equipamentos vencidos ou em atenção</small>
+            <small>Quantidade de equipamentos vencidos por filial</small>
           </div>
           <div id="preventiveBranchBars" class="bar-list"></div>
         </article>
         <article class="analysis-panel">
           <div class="analysis-title">
             <h2>Maiores atrasos</h2>
-            <small>Ranking por dias vencidos da preventiva</small>
+            <small>Ranking por horas vencidas da preventiva</small>
           </div>
           <div id="preventiveRanking" class="ranking-list"></div>
         </article>
@@ -126,6 +126,6 @@
       </section>
     </main>
 
-    <script src="./painel-preventivas.js?v=46"></script>
+    <script src="./painel-preventivas.js?v=49"></script>
   </body>
 </html>

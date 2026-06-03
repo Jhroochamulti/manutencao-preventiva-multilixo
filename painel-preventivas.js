@@ -41,6 +41,17 @@ document.querySelector("#preventiveStatusFilter").addEventListener("change", (ev
   render();
 });
 
+document.querySelector("#overdueSegment").addEventListener("click", () => {
+  searchTerm = "";
+  branchFilter = "all";
+  statusFilter = "Vencida";
+  document.querySelector("#preventiveSearch").value = "";
+  document.querySelector("#preventiveBranchFilter").value = "all";
+  document.querySelector("#preventiveStatusFilter").value = "Vencida";
+  render();
+  document.querySelector(".spreadsheet-card").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
 async function loadSheetData() {
   if (!sheetUrl) {
     rawRows = [];
@@ -93,14 +104,14 @@ function filteredRows() {
 function renderStats() {
   const metrics = currentMetrics();
   const dueSoon = visibleRows.filter(isDueSoon).length;
-  const maxDays = visibleRows.reduce((max, row) => Math.max(max, overdueDays(row)), 0);
+  const maxHours = visibleRows.reduce((max, row) => Math.max(max, overdueHours(row)), 0);
   const adherence = visibleRows.filter(isAdherent).length;
 
   document.querySelector("#preventiveTotal").textContent = metrics.total;
   document.querySelector("#preventiveOnTime").textContent = metrics.onTime;
   document.querySelector("#preventiveOverdue").textContent = metrics.overdue;
   document.querySelector("#preventiveDueSoon").textContent = dueSoon;
-  document.querySelector("#preventiveCritical").textContent = `${formatNumber(maxDays)}d`;
+  document.querySelector("#preventiveCritical").textContent = `${formatNumber(maxHours)}h`;
   document.querySelector("#preventiveCompliance").textContent = adherence;
 }
 
@@ -151,7 +162,7 @@ function renderBranchBars() {
     const branch = normalizedBranch(row) || "Sem filial";
     const current = acc[branch] || { total: 0, risk: 0 };
     current.total += 1;
-    if (isOverdue(row) || isDueSoon(row)) current.risk += 1;
+    if (isOverdue(row)) current.risk += 1;
     acc[branch] = current;
     return acc;
   }, {});
@@ -164,7 +175,7 @@ function renderBranchBars() {
       <div class="bar-item">
         <div class="bar-meta">
           <strong>${escapeHtml(branch)}</strong>
-          <span>${value.risk} em atenção · ${value.total} total</span>
+          <span>${value.risk} vencida${value.risk === 1 ? "" : "s"} · ${value.total} total</span>
         </div>
         <div class="bar-track"><span style="width:${(value.risk / max) * 100}%"></span></div>
       </div>
@@ -175,9 +186,9 @@ function renderBranchBars() {
 function renderRanking() {
   const container = document.querySelector("#preventiveRanking");
   const rows = [...visibleRows]
-    .map((row) => ({ row, days: overdueDays(row) }))
-    .filter((item) => item.days > 0)
-    .sort((a, b) => b.days - a.days)
+    .map((row) => ({ row, hours: overdueHours(row) }))
+    .filter((item) => item.hours > 0)
+    .sort((a, b) => b.hours - a.hours)
     .slice(0, 6);
 
   container.innerHTML = rows
@@ -186,7 +197,7 @@ function renderRanking() {
         <strong>${index + 1}</strong>
         <div>
           <span>${escapeHtml(primaryLabel(item.row))}</span>
-          <small>${formatNumber(item.days)} dia${item.days === 1 ? "" : "s"} vencida · ${escapeHtml(normalizedBranch(item.row) || "Sem filial")}</small>
+          <small>${formatNumber(item.hours)}h vencida · ${escapeHtml(normalizedBranch(item.row) || "Sem filial")}</small>
         </div>
       </div>
     `)
@@ -241,26 +252,26 @@ function primaryLabel(row) {
 }
 
 function extractDays(row) {
-  return isOverdue(row) ? overdueDays(row) : dueInDays(row);
+  return isOverdue(row) ? overdueHours(row) : dueInHours(row);
 }
 
-function overdueDays(row) {
+function overdueHours(row) {
   const key = findKey(row, ["vencida"]);
   return key ? numberValue(row[key]) : 0;
 }
 
-function dueInDays(row) {
+function dueInHours(row) {
   const key = findKey(row, ["vence em"]);
   return key ? numberValue(row[key]) : 0;
 }
 
 function isOverdue(row) {
-  return overdueDays(row) > 0;
+  return overdueHours(row) > 0;
 }
 
 function isDueSoon(row) {
-  const due = dueInDays(row);
-  return !isOverdue(row) && due > 0 && due <= 30;
+  const due = dueInHours(row);
+  return !isOverdue(row) && due > 0 && due <= 50;
 }
 
 function isAdherent(row) {

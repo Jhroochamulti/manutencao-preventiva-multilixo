@@ -14,6 +14,8 @@ Site estatico para acompanhamento de manutencao preventiva de maquinas, com foco
 - Aderencia definida por desvio entre -50h e +50h em relacao ao vencimento.
 - Grafico de aderencia com percentuais visiveis e quantidade por faixa no hover.
 - No grafico, em dia e vencidas formam a linha base; aderencia ±50h aparece sobreposta em azul.
+- Atrasos do painel geral medidos em horas; clique na faixa vermelha do grafico filtra os equipamentos vencidos.
+- Aderencia exibida dentro da barra principal como faixa azul sobreposta na janela de vencimento.
 - Campo de status alinhado entre cadastro, painel e informacoes gerais.
 - Edicao e exclusao pelo painel principal.
 - Edicao e exclusao pela pagina de informacoes gerais.
