@@ -7,7 +7,7 @@ Site estatico para acompanhamento de manutencao preventiva de maquinas, com foco
 - Cadastro de nova preventiva.
 - Campos do equipamento: equipamento, placa, filial, modelo e ano.
 - Preenchimento automatico pela placa usando a base estatica `assets/inventario-data.js`.
-- Indicadores com metas: lead time total 2,5 dias; solicitacao ate disponibilidade 0 dia; disponivel ate retirada 0 dia; retirada ate execucao 2 dias.
+- Indicadores com metas: lead time total 2,5 dias; solicitacao ate disponibilidade 0 dia; disponivel ate retirada 0,5 dia; retirada ate execucao 2 dias.
 - Metas exibidas nos cards superiores e no painel principal de gargalos.
 - Campo de status alinhado entre cadastro, painel e informacoes gerais.
 - Edicao e exclusao pelo painel principal.

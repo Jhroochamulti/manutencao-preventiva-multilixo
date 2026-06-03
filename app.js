@@ -56,7 +56,7 @@ const inventoryByPlate = new Map(inventoryRecords.map((item) => [normalizePlate(
 const INDICATOR_GOALS = {
   leadTime: 2.5,
   almoxarifado: 0,
-  planejamento: 0,
+  planejamento: 0.5,
   execucao: 2
 };
 

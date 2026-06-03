@@ -59,7 +59,7 @@ let periodEnd = "";
 const INDICATOR_GOALS = {
   leadTime: 2.5,
   requestAvailable: 0,
-  availablePickup: 0,
+  availablePickup: 0.5,
   pickupExecution: 2
 };
 
@@ -317,7 +317,7 @@ function renderRows(items) {
 }
 
 function editFromGeneral(id) {
-  window.location.href = `./index.html?v=35&edit=${encodeURIComponent(id)}#nova-preventiva`;
+  window.location.href = `./index.html?v=36&edit=${encodeURIComponent(id)}#nova-preventiva`;
 }
 
 function deleteFromGeneral(id) {
