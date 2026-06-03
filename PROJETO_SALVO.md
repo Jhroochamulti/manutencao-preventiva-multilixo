@@ -4,7 +4,7 @@ Projeto: Manutencao Preventiva de Maquinas - Multilixo
 
 Status: salvo e pronto para publicacao estatica no GitHub Pages.
 
-Versao final: v36.
+Versao final: v37.
 
 Ultimas atualizacoes:
 
