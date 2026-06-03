@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Painel Geral das Preventivas | Multilixo</title>
-    <link rel="stylesheet" href="./styles.css?v=43" />
+    <link rel="stylesheet" href="./styles.css?v=45" />
   </head>
   <body class="general-page preventive-panel-page">
     <header class="general-header">
@@ -16,8 +16,8 @@
         </div>
       </div>
       <nav class="general-actions" aria-label="Ações">
-        <a class="outline-action" href="./index.html?v=43">Painel</a>
-        <a class="outline-action" href="./geral.html?v=43">Informações gerais</a>
+        <a class="outline-action" href="./index.html?v=45">Painel</a>
+        <a class="outline-action" href="./geral.html?v=45">Informações gerais</a>
         <button class="outline-action" id="refreshPreventivePanel" type="button">Atualizar dados</button>
         <button class="outline-action" id="exportPreventivePanel" type="button">Exportar Excel</button>
       </nav>
@@ -71,10 +71,10 @@
           </div>
           <strong id="adherenceLabel">0%</strong>
         </div>
-        <div class="compliance-line" aria-hidden="true">
-          <span class="line-segment on-time" id="onTimeSegment"></span>
-          <span class="line-segment adherence" id="adherenceSegment"></span>
-          <span class="line-segment overdue" id="overdueSegment"></span>
+        <div class="compliance-line" aria-label="Distribuição de preventivas">
+          <span class="line-segment on-time" id="onTimeSegment"><span id="onTimePercent">0%</span></span>
+          <span class="line-segment overdue" id="overdueSegment"><span id="overduePercent">0%</span></span>
+          <span class="adherence-overlay" id="adherenceSegment"><span id="adherencePercent">0%</span></span>
         </div>
         <div class="line-legend">
           <span><i class="legend-dot green"></i>Em dia</span>
@@ -126,6 +126,6 @@
       </section>
     </main>
 
-    <script src="./painel-preventivas.js?v=43"></script>
+    <script src="./painel-preventivas.js?v=45"></script>
   </body>
 </html>

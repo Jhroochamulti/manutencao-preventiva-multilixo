@@ -317,7 +317,7 @@ function renderRows(items) {
 }
 
 function editFromGeneral(id) {
-  window.location.href = `./index.html?v=43&edit=${encodeURIComponent(id)}#nova-preventiva`;
+  window.location.href = `./index.html?v=45&edit=${encodeURIComponent(id)}#nova-preventiva`;
 }
 
 function deleteFromGeneral(id) {

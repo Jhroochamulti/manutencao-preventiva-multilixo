@@ -105,16 +105,30 @@ function renderStats() {
 }
 
 function renderComplianceLine() {
-  const total = visibleRows.length || 1;
+  const metrics = currentMetrics();
+  const total = metrics.total || 1;
   const adherence = visibleRows.filter(isAdherent).length;
-  const onTime = visibleRows.filter((row) => !isOverdue(row) && !isAdherent(row)).length;
-  const overdue = visibleRows.filter((row) => isOverdue(row) && !isAdherent(row)).length;
-  const adherencePercent = visibleRows.length ? (adherence / visibleRows.length) * 100 : 0;
+  const onTime = metrics.onTime;
+  const overdue = metrics.overdue;
+  const onTimePercent = metrics.total ? (onTime / metrics.total) * 100 : 0;
+  const adherencePercent = metrics.total ? (adherence / metrics.total) * 100 : 0;
+  const overduePercent = metrics.total ? (overdue / metrics.total) * 100 : 0;
 
-  document.querySelector("#onTimeSegment").style.width = `${(onTime / total) * 100}%`;
-  document.querySelector("#adherenceSegment").style.width = `${(adherence / total) * 100}%`;
-  document.querySelector("#overdueSegment").style.width = `${(overdue / total) * 100}%`;
+  updateLineSegment("#onTimeSegment", "#onTimePercent", onTime, onTimePercent, "Em dia");
+  updateLineSegment("#adherenceSegment", "#adherencePercent", adherence, adherencePercent, "Em aderência");
+  updateLineSegment("#overdueSegment", "#overduePercent", overdue, overduePercent, "Vencidas");
   document.querySelector("#adherenceLabel").textContent = `${formatNumber(adherencePercent)}%`;
+}
+
+function updateLineSegment(segmentSelector, labelSelector, quantity, percent, label) {
+  const segment = document.querySelector(segmentSelector);
+  const percentLabel = document.querySelector(labelSelector);
+  if (!segment || !percentLabel) return;
+
+  segment.style.width = `${percent}%`;
+  segment.title = `${label}: ${quantity} equipamento${quantity === 1 ? "" : "s"}`;
+  segment.setAttribute("aria-label", segment.title);
+  percentLabel.textContent = percent > 0 ? `${formatNumber(percent)}%` : "";
 }
 
 function currentMetrics() {

@@ -4,7 +4,7 @@ Projeto: Manutencao Preventiva de Maquinas - Multilixo
 
 Status: salvo e pronto para publicacao estatica no GitHub Pages.
 
-Versao final: v43.
+Versao final: v45.
 
 Ultimas atualizacoes:
 
@@ -21,6 +21,8 @@ Ultimas atualizacoes:
 - Indicadores principais usando o resumo oficial da planilha: Frota Op., Em dia e Vencidas.
 - Grafico de linha unica adicionado com em dia, aderencia e vencidas.
 - Regra de aderencia ajustada para desvio entre -50h e +50h.
+- Grafico de aderencia com percentual em cada faixa e quantidade no hover.
+- Grafico ajustado para manter em dia e vencidas como base, com aderencia ±50h sobreposta em azul.
 
 Arquivos principais:
 

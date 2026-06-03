@@ -12,6 +12,8 @@ Site estatico para acompanhamento de manutencao preventiva de maquinas, com foco
 - Nova pagina `Painel geral das preventivas` preparada para ler Google Sheets publicado como CSV.
 - Indicadores da planilha diaria: frota monitorada, em dia, vencidas, vencem em ate 30 dias, maior atraso e aderencia.
 - Aderencia definida por desvio entre -50h e +50h em relacao ao vencimento.
+- Grafico de aderencia com percentuais visiveis e quantidade por faixa no hover.
+- No grafico, em dia e vencidas formam a linha base; aderencia ±50h aparece sobreposta em azul.
 - Campo de status alinhado entre cadastro, painel e informacoes gerais.
 - Edicao e exclusao pelo painel principal.
 - Edicao e exclusao pela pagina de informacoes gerais.
