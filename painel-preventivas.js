@@ -107,16 +107,20 @@ function renderStats() {
 function renderComplianceLine() {
   const metrics = currentMetrics();
   const total = metrics.total || 1;
-  const adherence = visibleRows.filter(isAdherent).length;
+  const adherenceRows = visibleRows.filter(isAdherent);
+  const adherence = adherenceRows.length;
+  const adherenceBefore = adherenceRows.filter((row) => !isOverdue(row)).length;
   const onTime = metrics.onTime;
   const overdue = metrics.overdue;
   const onTimePercent = metrics.total ? (onTime / metrics.total) * 100 : 0;
   const adherencePercent = metrics.total ? (adherence / metrics.total) * 100 : 0;
   const overduePercent = metrics.total ? (overdue / metrics.total) * 100 : 0;
+  const adherenceStartPercent = metrics.total ? ((onTime - adherenceBefore) / metrics.total) * 100 : 0;
 
   updateLineSegment("#onTimeSegment", "#onTimePercent", onTime, onTimePercent, "Em dia");
   updateLineSegment("#adherenceSegment", "#adherencePercent", adherence, adherencePercent, "Em aderência");
   updateLineSegment("#overdueSegment", "#overduePercent", overdue, overduePercent, "Vencidas");
+  document.querySelector("#adherenceSegment").style.left = `${Math.max(0, adherenceStartPercent)}%`;
   document.querySelector("#adherenceLabel").textContent = `${formatNumber(adherencePercent)}%`;
 }
 

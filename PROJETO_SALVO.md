@@ -4,7 +4,7 @@ Projeto: Manutencao Preventiva de Maquinas - Multilixo
 
 Status: salvo e pronto para publicacao estatica no GitHub Pages.
 
-Versao final: v45.
+Versao final: v46.
 
 Ultimas atualizacoes:
 
@@ -23,6 +23,7 @@ Ultimas atualizacoes:
 - Regra de aderencia ajustada para desvio entre -50h e +50h.
 - Grafico de aderencia com percentual em cada faixa e quantidade no hover.
 - Grafico ajustado para manter em dia e vencidas como base, com aderencia ±50h sobreposta em azul.
+- Faixa azul de aderencia posicionada na transicao entre em dia e vencidas.
 
 Arquivos principais:
 
