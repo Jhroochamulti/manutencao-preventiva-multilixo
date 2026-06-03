@@ -94,13 +94,20 @@ document.querySelector("#exportButton").addEventListener("click", exportCsv);
 document.querySelector("#exportPdfGeneralButton").addEventListener("click", exportGeneralPdf);
 
 async function loadPanelRecords() {
+  const localRecords = readLocalRecords().filter((record) => !String(record.id || "").startsWith("mlx-default-"));
+
   try {
     const result = await sharedRequest("list");
     panelRecords = Array.isArray(result.records) ? result.records : [];
+
+    if (!panelRecords.length && localRecords.length) {
+      panelRecords = await migrateLocalRecords(localRecords);
+    }
+
     localStorage.setItem(STORAGE_KEY, JSON.stringify(panelRecords));
   } catch (error) {
     console.warn("Usando dados locais porque a planilha compartilhada não respondeu.", error);
-    panelRecords = readLocalRecords().filter((record) => !String(record.id || "").startsWith("mlx-default-"));
+    panelRecords = localRecords;
   }
 
   rows = recordsToRows(panelRecords);
@@ -118,6 +125,23 @@ function readLocalRecords() {
     console.warn("Dados locais inválidos.", error);
     return [];
   }
+}
+
+async function migrateLocalRecords(localRecords) {
+  const shouldMigrate = confirm(
+    `Encontramos ${localRecords.length} preventiva(s) salvas neste navegador. Deseja enviar esses dados para a planilha compartilhada?`
+  );
+
+  if (!shouldMigrate) return localRecords;
+
+  const migrated = [];
+
+  for (const record of localRecords) {
+    const result = await sharedRequest("create", record);
+    migrated.push(result.record || record);
+  }
+
+  return migrated;
 }
 
 function sharedRequest(action, payload = {}) {
@@ -392,7 +416,7 @@ function renderRows(items) {
 }
 
 function editFromGeneral(id) {
-  window.location.href = `./index.html?v=52&edit=${encodeURIComponent(id)}#nova-preventiva`;
+  window.location.href = `./index.html?v=53&edit=${encodeURIComponent(id)}#nova-preventiva`;
 }
 
 async function deleteFromGeneral(id) {

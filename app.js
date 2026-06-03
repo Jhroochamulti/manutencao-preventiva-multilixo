@@ -227,14 +227,20 @@ function normalizePlate(value) {
 }
 
 async function loadRecords() {
+  const localRecords = readLocalRecords().filter((record) => !String(record.id || "").startsWith("mlx-default-"));
+
   try {
     const result = await sharedRequest("list");
     records = Array.isArray(result.records) ? result.records : [];
 
+    if (!records.length && localRecords.length) {
+      records = await migrateLocalRecords(localRecords);
+    }
+
     persistLocal();
   } catch (error) {
     console.warn("Usando dados locais porque a planilha compartilhada não respondeu.", error);
-    records = readLocalRecords().filter((record) => !String(record.id || "").startsWith("mlx-default-"));
+    records = localRecords;
   }
 }
 
@@ -250,6 +256,23 @@ function readLocalRecords() {
 
 function persistLocal() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+}
+
+async function migrateLocalRecords(localRecords) {
+  const shouldMigrate = confirm(
+    `Encontramos ${localRecords.length} preventiva(s) salvas neste navegador. Deseja enviar esses dados para a planilha compartilhada?`
+  );
+
+  if (!shouldMigrate) return localRecords;
+
+  const migrated = [];
+
+  for (const record of localRecords) {
+    const result = await sharedRequest("create", record);
+    migrated.push(result.record || record);
+  }
+
+  return migrated;
 }
 
 function sharedRequest(action, payload = {}) {
