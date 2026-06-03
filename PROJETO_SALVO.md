@@ -4,7 +4,7 @@ Projeto: Manutencao Preventiva de Maquinas - Multilixo
 
 Status: salvo e pronto para publicacao estatica no GitHub Pages.
 
-Versao final: v37.
+Versao final: v38.
 
 Ultimas atualizacoes:
 
@@ -15,14 +15,17 @@ Ultimas atualizacoes:
 - Base de inventario adicionada para preencher equipamento, filial, modelo e ano ao digitar a placa.
 - Metas adicionadas aos indicadores: lead time total 2,5 dias, solicitacao ate disponibilidade 0 dia, disponivel ate retirada 0,5 dia e retirada ate execucao 2 dias.
 - Metas exibidas tambem no painel principal de gargalos.
+- Nova pagina Painel geral das preventivas criada para consumir Google Sheets publicado como CSV.
 
 Arquivos principais:
 
 - `index.html`
 - `geral.html`
+- `painel-preventivas.html`
 - `styles.css`
 - `app.js`
 - `geral.js`
+- `painel-preventivas.js`
 - `assets/logo-multilixo.png`
 - `README.md`
 - `.nojekyll`

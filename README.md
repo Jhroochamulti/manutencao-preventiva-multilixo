@@ -9,6 +9,7 @@ Site estatico para acompanhamento de manutencao preventiva de maquinas, com foco
 - Preenchimento automatico pela placa usando a base estatica `assets/inventario-data.js`.
 - Indicadores com metas: lead time total 2,5 dias; solicitacao ate disponibilidade 0 dia; disponivel ate retirada 0,5 dia; retirada ate execucao 2 dias.
 - Metas exibidas nos cards superiores e no painel principal de gargalos.
+- Nova pagina `Painel geral das preventivas` preparada para ler Google Sheets publicado como CSV.
 - Campo de status alinhado entre cadastro, painel e informacoes gerais.
 - Edicao e exclusao pelo painel principal.
 - Edicao e exclusao pela pagina de informacoes gerais.
@@ -26,6 +27,8 @@ Site estatico para acompanhamento de manutencao preventiva de maquinas, com foco
 
 A pagina `Informacoes gerais` usa a mesma base local das novas solicitacoes cadastradas no painel principal.
 
+A pagina `Painel geral das preventivas` usa um link CSV publicado do Google Sheets. O link fica salvo no navegador pela chave `multilixo-painel-preventivas-csv-url`.
+
 Os dados sao salvos no navegador pelo `localStorage`, na chave:
 
 `multilixo-preventivas`
@@ -34,9 +37,11 @@ Os dados sao salvos no navegador pelo `localStorage`, na chave:
 
 - `index.html`: painel principal e formulario de cadastro.
 - `geral.html`: informacoes gerais, dashboards, filtros e tabela analitica.
+- `painel-preventivas.html`: painel geral alimentado por Google Sheets publicado como CSV.
 - `styles.css`: estilos e identidade visual Multilixo.
 - `app.js`: logica do painel principal.
 - `geral.js`: logica da pagina de informacoes gerais.
+- `painel-preventivas.js`: logica do painel geral da planilha diaria.
 - `assets/logo-multilixo.png`: logo usada no site.
 - `.nojekyll`: arquivo auxiliar para publicacao direta no GitHub Pages.
 - `PROJETO_SALVO.md`: registro do projeto salvo no Codex.

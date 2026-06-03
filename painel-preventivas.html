@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Painel Geral das Preventivas | Multilixo</title>
+    <link rel="stylesheet" href="./styles.css?v=38" />
+  </head>
+  <body class="general-page preventive-panel-page">
+    <header class="general-header">
+      <div class="general-title">
+        <span class="tool-icon" aria-hidden="true">#</span>
+        <div>
+          <h1>Painel geral das preventivas</h1>
+          <p>Dados integrados da planilha diária</p>
+        </div>
+      </div>
+      <nav class="general-actions" aria-label="Ações">
+        <a class="outline-action" href="./index.html?v=38">Painel</a>
+        <a class="outline-action" href="./geral.html?v=38">Informações gerais</a>
+        <button class="outline-action" id="refreshPreventivePanel" type="button">Atualizar dados</button>
+        <button class="outline-action" id="exportPreventivePanel" type="button">Exportar Excel</button>
+      </nav>
+    </header>
+
+    <main class="general-main">
+      <section class="sheet-config" aria-label="Configuração da planilha">
+        <div>
+          <strong>Fonte de dados</strong>
+          <span id="sheetStatus">Aguardando link CSV do Google Sheets.</span>
+        </div>
+        <label>
+          Link CSV publicado
+          <input id="sheetUrlInput" type="url" placeholder="Cole aqui o link CSV publicado do Google Sheets" />
+        </label>
+        <button class="primary-button" id="saveSheetUrl" type="button">Salvar fonte</button>
+      </section>
+
+      <section class="general-stats" aria-label="Indicadores da planilha">
+        <article>
+          <span class="stat-icon blue" aria-hidden="true">#</span>
+          <div><strong id="preventiveTotal">0</strong><small>Total de preventivas</small></div>
+        </article>
+        <article>
+          <span class="stat-icon amber" aria-hidden="true">o</span>
+          <div><strong id="preventiveOpen">0</strong><small>Em aberto</small></div>
+        </article>
+        <article>
+          <span class="stat-icon green" aria-hidden="true">✓</span>
+          <div><strong id="preventiveDone">0</strong><small>Concluídas</small></div>
+        </article>
+        <article>
+          <span class="stat-icon red" aria-hidden="true">!</span>
+          <div><strong id="preventiveCritical">0</strong><small>Maior prazo em dias</small></div>
+        </article>
+      </section>
+
+      <section class="general-filters preventive-filters" aria-label="Filtros do painel geral">
+        <div class="general-search">
+          <input id="preventiveSearch" type="search" placeholder="Buscar por equipamento, placa, OS, status ou filial..." />
+        </div>
+        <input id="preventiveStart" type="date" aria-label="Data inicial" />
+        <input id="preventiveEnd" type="date" aria-label="Data final" />
+        <select id="preventiveStatusFilter" aria-label="Filtro de status">
+          <option value="all">Todos os status</option>
+        </select>
+      </section>
+
+      <section class="analysis-grid" aria-label="Análises do painel geral">
+        <article class="analysis-panel">
+          <div class="analysis-title">
+            <h2>Status das preventivas</h2>
+            <small>Distribuição por status da planilha</small>
+          </div>
+          <div id="preventiveStatusBars" class="bar-list"></div>
+        </article>
+        <article class="analysis-panel">
+          <div class="analysis-title">
+            <h2>Maiores prazos</h2>
+            <small>Ranking por dias ou lead time identificado</small>
+          </div>
+          <div id="preventiveRanking" class="ranking-list"></div>
+        </article>
+      </section>
+
+      <section class="spreadsheet-card" aria-label="Tabela do painel geral das preventivas">
+        <div class="spreadsheet-wrap">
+          <table class="spreadsheet-table">
+            <thead id="preventiveTableHead"></thead>
+            <tbody id="preventiveTableBody"></tbody>
+          </table>
+          <div class="empty-state" id="preventiveEmptyState">
+            <strong>Nenhum dado carregado</strong>
+            <p>Publique a planilha do Google Sheets como CSV e salve o link acima.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="./painel-preventivas.js?v=38"></script>
+  </body>
+</html>
