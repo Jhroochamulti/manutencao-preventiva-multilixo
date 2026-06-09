@@ -123,18 +123,65 @@ function filteredFleet() {
 function render() {
   const visibleFleet = filteredFleet();
   const fleetIds = new Set(visibleFleet.map((record) => record.id));
+  const fleetById = new Map(visibleFleet.map((record) => [record.id, record]));
   const visibleCorrectives = correctives.filter((record) => !isClosed(record.status) && fleetIds.has(record.fleetId));
   const visibleMaterials = materials.filter((record) => !["Retirado", "Cancelado"].includes(record.status || "") && (!record.fleetId || fleetIds.has(record.fleetId)));
   const visiblePreventives = preventives.filter((record) => !["Concluido", "Cancelado"].includes(record.status || "") && (!record.fleetId || fleetIds.has(record.fleetId)));
   const slaLate = monitoredLate(visibleCorrectives, visibleMaterials);
   const monitored = visibleCorrectives.length + visibleMaterials.length;
 
+  renderDomainSummary(visibleFleet, visibleCorrectives, fleetById);
   renderKpis(visibleFleet, visibleCorrectives, visibleMaterials, visiblePreventives, slaLate, monitored);
   renderHealthChart(visibleCorrectives, visibleMaterials, slaLate, monitored);
   renderFleetDonut(visibleFleet);
   renderBranchPressure(visibleFleet, visibleCorrectives, visibleMaterials);
   renderPriorityColumns(visibleCorrectives);
   renderAssetBottlenecks(visibleFleet, visibleCorrectives, visibleMaterials);
+}
+
+function renderDomainSummary(visibleFleet, visibleCorrectives, fleetById) {
+  const trucks = visibleFleet.filter((record) => record.category === "caminhao");
+  const machines = visibleFleet.filter((record) => record.category === "maquina");
+  const retainedTrucks = visibleCorrectives.filter((record) => fleetById.get(record.fleetId)?.category === "caminhao");
+  const retainedMachines = visibleCorrectives.filter((record) => fleetById.get(record.fleetId)?.category === "maquina");
+
+  document.querySelector("#vtrFleet").textContent = trucks.length;
+  document.querySelector("#vtrRetained").textContent = retainedTrucks.length;
+  document.querySelector("#vtrAvailability").textContent = `${availabilityPercent(trucks.length, retainedTrucks.length)}%`;
+  document.querySelector("#mtrFleet").textContent = machines.length;
+  document.querySelector("#mtrRetained").textContent = retainedMachines.length;
+  document.querySelector("#mtrAvailability").textContent = `${availabilityPercent(machines.length, retainedMachines.length)}%`;
+
+  renderStatusLine("#vtrStatusLine", retainedTrucks);
+  renderStatusLine("#mtrStatusLine", retainedMachines);
+}
+
+function renderStatusLine(selector, records) {
+  const container = document.querySelector(selector);
+  const total = records.length;
+  if (!total) {
+    container.innerHTML = `<span class="ok" style="width:100%">Sem retencoes no filtro</span>`;
+    return;
+  }
+
+  const counts = records.reduce((acc, record) => {
+    const elapsed = slaHours(record);
+    const goal = correctiveGoal(record.priority);
+    const key = elapsed <= goal ? "ok" : elapsed <= goal * 1.5 ? "attention" : "late";
+    acc[key] += 1;
+    return acc;
+  }, { ok: 0, attention: 0, late: 0 });
+
+  const items = [
+    ["ok", "Dentro", counts.ok],
+    ["attention", "Atencao", counts.attention],
+    ["late", "Gargalo", counts.late]
+  ];
+
+  container.innerHTML = items
+    .filter(([, , count]) => count)
+    .map(([key, label, count]) => `<span class="${key}" style="width:${(count / total) * 100}%">${label}: ${count}</span>`)
+    .join("");
 }
 
 function renderKpis(visibleFleet, visibleCorrectives, visibleMaterials, visiblePreventives, slaLate, monitored) {
@@ -299,6 +346,11 @@ function syncBranchFilter() {
 function legendRow(label, count, total, color) {
   const percent = total ? Math.round((count / total) * 100) : 0;
   return `<div class="chart-legend-row"><i style="background:${color}"></i><span>${escapeHtml(label)}</span><strong>${count} - ${percent}%</strong></div>`;
+}
+
+function availabilityPercent(fleetCount, retainedCount) {
+  if (!fleetCount) return 0;
+  return Math.max(0, Math.round(((fleetCount - retainedCount) / fleetCount) * 1000) / 10);
 }
 
 function countBy(records, field) {

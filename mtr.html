@@ -82,6 +82,34 @@
         </select>
       </section>
 
+      <section class="mtr-domain-grid" aria-label="Resumo VTR e MTR">
+        <article class="mtr-domain-card vtr">
+          <div>
+            <p class="eyebrow">VTR - Caminhoes</p>
+            <h2>Veiculos tecnicamente retidos</h2>
+          </div>
+          <div class="mtr-domain-metrics">
+            <span><small>Frota operacional</small><strong id="vtrFleet">0</strong></span>
+            <span><small>Retidos</small><strong id="vtrRetained">0</strong></span>
+            <span><small>Disponibilidade</small><strong id="vtrAvailability">0%</strong></span>
+          </div>
+          <div id="vtrStatusLine" class="mtr-status-line"></div>
+        </article>
+
+        <article class="mtr-domain-card mtr">
+          <div>
+            <p class="eyebrow">MTR - Maquinas</p>
+            <h2>Maquinas tecnicamente retidas</h2>
+          </div>
+          <div class="mtr-domain-metrics">
+            <span><small>Frota operacional</small><strong id="mtrFleet">0</strong></span>
+            <span><small>Retidas</small><strong id="mtrRetained">0</strong></span>
+            <span><small>Disponibilidade</small><strong id="mtrAvailability">0%</strong></span>
+          </div>
+          <div id="mtrStatusLine" class="mtr-status-line"></div>
+        </article>
+      </section>
+
       <section class="mtr-scoreboard" aria-label="Indicadores gerais">
         <article><span>Frota ativa</span><strong id="kpiFleet">0</strong><small id="kpiFleetMix">0 caminhoes | 0 maquinas</small></article>
         <article><span>Corretivas abertas</span><strong id="kpiCorrectives">0</strong><small id="kpiStopped">0 equipamento(s) parado(s)</small></article>
