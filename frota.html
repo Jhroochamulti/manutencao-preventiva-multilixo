@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Frota | Sistema de Manutencao Multilixo</title>
+    <link rel="stylesheet" href="./styles.css?v=dev-frota-2" />
+  </head>
+  <body class="app-shell fleet-page">
+    <header class="app-header">
+      <div class="brand" aria-label="Grupo Multilixo">
+        <img class="brand-logo" src="./assets/logo-multilixo.png" alt="Grupo Multilixo" />
+      </div>
+      <nav class="top-actions" aria-label="Modulos">
+        <a class="secondary-link" href="./index.html?v=54">Preventivas</a>
+        <a class="secondary-link active-link" href="./frota.html">Frota</a>
+        <a class="secondary-link" href="./geral.html?v=54">Informacoes gerais</a>
+        <a class="secondary-link" href="./painel-preventivas.html?v=54">Painel preventivas</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="module-hero">
+        <div>
+          <p class="eyebrow">Sistema Web de Gestao de Manutencao</p>
+          <h1>Frota total</h1>
+          <p>
+            Cadastre, consulte e sincronize caminhoes, maquinas, utilitarios e geradores a partir do inventario oficial.
+          </p>
+        </div>
+        <div class="dev-status">
+          <strong>Ambiente de desenvolvimento</strong>
+          <span>Nada desta pagina foi publicado na versao principal sem aprovacao.</span>
+        </div>
+      </section>
+
+      <section class="fleet-metrics" aria-label="Indicadores da frota">
+        <article>
+          <span>Total da frota</span>
+          <strong id="fleetTotal">0</strong>
+        </article>
+        <article>
+          <span>Caminhoes e similares</span>
+          <strong id="fleetTrucks">0</strong>
+        </article>
+        <article>
+          <span>Maquinas e similares</span>
+          <strong id="fleetMachines">0</strong>
+        </article>
+        <article>
+          <span>Outros ativos</span>
+          <strong id="fleetOthers">0</strong>
+        </article>
+      </section>
+
+      <section class="import-panel" aria-labelledby="importTitle">
+        <div class="panel-title">
+          <div>
+            <p class="eyebrow">Carga da base</p>
+            <h2 id="importTitle">Importar inventario da frota</h2>
+          </div>
+        </div>
+
+        <div class="import-grid">
+          <label class="file-drop">
+            <span>Arquivo Excel ou CSV</span>
+            <input id="fleetFileInput" type="file" accept=".xlsx,.xls,.csv" />
+            <small>Use a base com as colunas: Classe Mecanica, Equipamento, Placa, Ano Modelo, Classe Operacional, Fabricante, Modelo e Filial.</small>
+          </label>
+          <div class="import-actions">
+            <button class="primary-button" id="previewImportButton" type="button">Analisar arquivo</button>
+            <button class="secondary-button" id="confirmImportButton" type="button" disabled>Confirmar sincronizacao</button>
+          </div>
+        </div>
+
+        <div class="sync-summary" id="syncSummary" hidden>
+          <article>
+            <span>Novos</span>
+            <strong id="newCount">0</strong>
+          </article>
+          <article>
+            <span>Alterados</span>
+            <strong id="changedCount">0</strong>
+          </article>
+          <article>
+            <span>Inativar</span>
+            <strong id="inactiveCount">0</strong>
+          </article>
+          <article>
+            <span>Sem alteracao</span>
+            <strong id="sameCount">0</strong>
+          </article>
+        </div>
+      </section>
+
+      <section class="content-panel fleet-list-panel">
+        <div class="toolbar">
+          <div class="search-box">
+            <input id="fleetSearch" type="search" placeholder="Buscar por equipamento, placa, modelo, filial ou fabricante" />
+          </div>
+          <select id="fleetCategoryFilter" class="select-filter" aria-label="Categoria">
+            <option value="all">Todas as categorias</option>
+            <option value="caminhao">Caminhoes</option>
+            <option value="maquina">Maquinas</option>
+            <option value="utilitario">Utilitarios</option>
+            <option value="gerador">Geradores</option>
+            <option value="outro">Outros</option>
+          </select>
+          <select id="fleetStatusFilter" class="select-filter" aria-label="Status">
+            <option value="active">Ativos</option>
+            <option value="all">Todos</option>
+            <option value="inactive">Inativos</option>
+          </select>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Equipamento</th>
+                <th>Placa</th>
+                <th>Categoria</th>
+                <th>Classe operacional</th>
+                <th>Fabricante / Modelo</th>
+                <th>Ano</th>
+                <th>Filial</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="fleetTableBody"></tbody>
+          </table>
+          <div class="empty-state" id="fleetEmptyState">
+            <strong>Nenhum ativo carregado</strong>
+            <p>Importe o inventario oficial para iniciar o cadastro da frota.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <template id="fleetRowTemplate">
+      <tr>
+        <td data-label="Equipamento"></td>
+        <td data-label="Placa"></td>
+        <td data-label="Categoria"></td>
+        <td data-label="Classe operacional"></td>
+        <td data-label="Fabricante / Modelo"></td>
+        <td data-label="Ano"></td>
+        <td data-label="Filial"></td>
+        <td data-label="Status"></td>
+      </tr>
+    </template>
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="./frota.js?v=dev-frota-2"></script>
+  </body>
+</html>
