@@ -21,6 +21,7 @@ let fleetRecords = loadFleet();
 let importPreview = null;
 let searchTerm = "";
 let categoryFilter = "all";
+let operationFilter = "all";
 let statusFilter = "active";
 let firebaseReady = false;
 let currentUser = null;
@@ -35,6 +36,8 @@ const syncSummary = document.querySelector("#syncSummary");
 const tableBody = document.querySelector("#fleetTableBody");
 const tableWrap = document.querySelector(".fleet-list-panel .table-wrap");
 const rowTemplate = document.querySelector("#fleetRowTemplate");
+const operationFilterSelect = document.querySelector("#fleetOperationFilter");
+const operationGrid = document.querySelector("#operationGrid");
 const loginForm = document.querySelector("#loginForm");
 const loginEmail = document.querySelector("#loginEmail");
 const loginPassword = document.querySelector("#loginPassword");
@@ -50,6 +53,11 @@ document.querySelector("#fleetSearch").addEventListener("input", (event) => {
 
 document.querySelector("#fleetCategoryFilter").addEventListener("change", (event) => {
   categoryFilter = event.target.value;
+  render();
+});
+
+operationFilterSelect.addEventListener("change", (event) => {
+  operationFilter = event.target.value;
   render();
 });
 
@@ -429,13 +437,16 @@ function filteredFleet() {
     return (
       (!searchTerm || haystack.includes(searchTerm)) &&
       (categoryFilter === "all" || record.category === categoryFilter) &&
+      (operationFilter === "all" || normalizeFilterValue(record.operationalClass) === operationFilter) &&
       (statusFilter === "all" || status === statusFilter)
     );
   });
 }
 
 function render() {
+  syncOperationFilter();
   renderMetrics();
+  renderOperationSummary();
   renderTable(filteredFleet());
 }
 
@@ -454,6 +465,81 @@ function renderMetrics() {
   document.querySelector("#fleetMachines").textContent = counts.maquina || 0;
   document.querySelector("#fleetOthers").textContent =
     (counts.utilitario || 0) + (counts.gerador || 0) + (counts.outro || 0);
+}
+
+function renderOperationSummary() {
+  const active = fleetRecords.filter((record) => record.active !== false);
+  const totals = countBy(active, "operationalClass");
+  const totalActive = active.length || 1;
+  const ranking = Object.entries(totals)
+    .sort((a, b) => b[1] - a[1] || naturalSort(a[0], b[0]))
+    .slice(0, 12);
+
+  operationGrid.innerHTML = "";
+
+  if (!ranking.length) {
+    operationGrid.innerHTML = `<p class="empty-inline">Importe a frota para visualizar as classes operacionais.</p>`;
+    return;
+  }
+
+  ranking.forEach(([label, count]) => {
+    const percent = Math.round((count / totalActive) * 100);
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "operation-card";
+    button.dataset.operation = normalizeFilterValue(label);
+    button.innerHTML = `
+      <span>${escapeHtml(label || "Sem classe")}</span>
+      <strong>${count}</strong>
+      <small>${percent}% da frota ativa</small>
+      <div class="mini-bar" aria-hidden="true"><i style="width:${percent}%"></i></div>
+    `;
+    button.addEventListener("click", () => {
+      operationFilter = button.dataset.operation;
+      operationFilterSelect.value = operationFilter;
+      render();
+    });
+    operationGrid.appendChild(button);
+  });
+}
+
+function syncOperationFilter() {
+  const currentValue = operationFilterSelect.value;
+  const active = fleetRecords.filter((record) => record.active !== false);
+  const options = Object.keys(countBy(active, "operationalClass"))
+    .sort((a, b) => naturalSort(a, b))
+    .map((label) => ({ label, value: normalizeFilterValue(label) }));
+
+  operationFilterSelect.innerHTML = `<option value="all">Todas as classes operacionais</option>`;
+
+  options.forEach((option) => {
+    const item = document.createElement("option");
+    item.value = option.value;
+    item.textContent = option.label || "Sem classe";
+    operationFilterSelect.appendChild(item);
+  });
+
+  if (options.some((option) => option.value === operationFilter)) {
+    operationFilterSelect.value = operationFilter;
+  } else {
+    operationFilter = currentValue === "all" ? "all" : operationFilter;
+    operationFilterSelect.value = "all";
+    if (!options.some((option) => option.value === operationFilter)) {
+      operationFilter = "all";
+    }
+  }
+}
+
+function countBy(records, field) {
+  return records.reduce((acc, record) => {
+    const label = record[field] || "Sem classe";
+    acc[label] = (acc[label] || 0) + 1;
+    return acc;
+  }, {});
+}
+
+function normalizeFilterValue(value) {
+  return normalizeHeader(value || "sem-classe");
 }
 
 function renderTable(rows) {

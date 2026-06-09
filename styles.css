@@ -246,6 +246,7 @@ main {
 .dev-status,
 .import-panel,
 .auth-panel,
+.operation-panel,
 .fleet-list-panel {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -305,9 +306,72 @@ main {
 
 .import-panel,
 .auth-panel,
+.operation-panel,
 .fleet-list-panel {
   margin: 0 clamp(16px, 4vw, 48px) 22px;
   padding: 20px;
+}
+
+.operation-panel {
+  border-top: 4px solid var(--green);
+}
+
+.operation-panel h2 {
+  margin: 0;
+  color: var(--purple);
+}
+
+.operation-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.operation-card {
+  display: grid;
+  gap: 8px;
+  min-height: 124px;
+  padding: 14px;
+  text-align: left;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: var(--clean-shadow);
+}
+
+.operation-card span {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.operation-card strong {
+  color: var(--purple);
+  font-size: 30px;
+  line-height: 1;
+}
+
+.operation-card small {
+  color: var(--muted);
+}
+
+.mini-bar {
+  overflow: hidden;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(110, 55, 129, 0.1);
+}
+
+.mini-bar i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--green);
+}
+
+.empty-inline {
+  margin: 0;
+  color: var(--muted);
 }
 
 .auth-panel {
@@ -463,6 +527,7 @@ main {
   }
 
   .fleet-metrics,
+  .operation-grid,
   .sync-summary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -475,6 +540,7 @@ main {
   }
 
   .fleet-metrics,
+  .operation-grid,
   .sync-summary {
     grid-template-columns: 1fr;
   }

@@ -74,6 +74,16 @@
         </article>
       </section>
 
+      <section class="operation-panel" aria-labelledby="operationTitle">
+        <div class="panel-title">
+          <div>
+            <p class="eyebrow">Classe operacional</p>
+            <h2 id="operationTitle">Distribuicao da frota por operacao</h2>
+          </div>
+        </div>
+        <div class="operation-grid" id="operationGrid"></div>
+      </section>
+
       <section class="import-panel" aria-labelledby="importTitle">
         <div class="panel-title">
           <div>
@@ -127,6 +137,9 @@
             <option value="gerador">Geradores</option>
             <option value="outro">Outros</option>
           </select>
+          <select id="fleetOperationFilter" class="select-filter" aria-label="Classe operacional">
+            <option value="all">Todas as classes operacionais</option>
+          </select>
           <select id="fleetStatusFilter" class="select-filter" aria-label="Status">
             <option value="active">Ativos</option>
             <option value="all">Todos</option>
@@ -173,6 +186,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="./firebase-config.js"></script>
-    <script type="module" src="./frota.js?v=dev-frota-3"></script>
+    <script type="module" src="./frota.js?v=dev-frota-4"></script>
   </body>
 </html>
