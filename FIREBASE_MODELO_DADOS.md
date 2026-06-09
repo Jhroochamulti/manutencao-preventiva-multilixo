@@ -110,6 +110,13 @@ Campos previstos:
 - `supplier`
 - `notes`
 
+Status previstos:
+
+- `Solicitado`
+- `Disponivel`
+- `Retirado`
+- `Cancelado`
+
 ### `users`
 
 Cadastro complementar dos usuarios autenticados pelo Firebase Authentication.

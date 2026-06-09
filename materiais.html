@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Materiais | Sistema de Manutencao Multilixo</title>
+    <link rel="stylesheet" href="./styles.css?v=dev-materiais-1" />
+  </head>
+  <body class="app-shell materials-page">
+    <header class="app-header">
+      <div class="brand" aria-label="Grupo Multilixo">
+        <img class="brand-logo" src="./assets/logo-multilixo.png" alt="Grupo Multilixo" />
+      </div>
+      <nav class="top-actions" aria-label="Modulos">
+        <a class="secondary-link" href="./dashboard.html?v=dev-dashboard-1">Dashboard</a>
+        <a class="secondary-link" href="./frota.html?v=dev-frota-4">Frota</a>
+        <a class="secondary-link" href="./corretivas.html?v=dev-corretivas-1">Corretivas</a>
+        <a class="secondary-link active-link" href="./materiais.html">Materiais</a>
+        <a class="secondary-link" href="./index.html?v=54">Preventivas</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="module-hero">
+        <div>
+          <p class="eyebrow">Almoxarifado e manutencao</p>
+          <h1>Materiais</h1>
+          <p>Controle solicitacao, disponibilidade, retirada e gargalos de materiais por equipamento, filial e tipo de manutencao.</p>
+        </div>
+        <div class="dev-status">
+          <strong>Ambiente de desenvolvimento</strong>
+          <span>Modulo conectado ao Firebase, ainda fora da versao publicada.</span>
+        </div>
+      </section>
+
+      <section class="auth-panel" aria-labelledby="authTitle">
+        <div>
+          <p class="eyebrow">Acesso restrito</p>
+          <h2 id="authTitle">Login da aplicacao</h2>
+          <p>Entre para consultar e atualizar materiais compartilhados.</p>
+        </div>
+        <form id="loginForm" class="auth-form">
+          <label>
+            E-mail
+            <input id="loginEmail" type="email" autocomplete="email" placeholder="seu@email.com" required />
+          </label>
+          <label>
+            Senha
+            <input id="loginPassword" type="password" autocomplete="current-password" required />
+          </label>
+          <button class="primary-button" type="submit">Entrar</button>
+          <button class="secondary-button" id="logoutButton" type="button" hidden>Sair</button>
+        </form>
+        <div class="auth-status" id="authStatus">Aguardando login.</div>
+      </section>
+
+      <section class="fleet-metrics material-metrics" aria-label="Indicadores de materiais">
+        <article><span>Solicitacoes abertas</span><strong id="openMaterials">0</strong></article>
+        <article><span>Aguardando material</span><strong id="waitingMaterials">0</strong></article>
+        <article><span>Disponivel p/ retirada</span><strong id="availableMaterials">0</strong></article>
+        <article><span>Lead time medio</span><strong id="avgMaterialLead">0d</strong></article>
+      </section>
+
+      <section class="corrective-workspace">
+        <aside class="form-panel corrective-form-panel">
+          <div class="panel-title">
+            <div>
+              <p class="eyebrow">Nova solicitacao</p>
+              <h2 id="formTitle">Material</h2>
+            </div>
+          </div>
+
+          <form id="materialForm">
+            <input type="hidden" id="materialId" />
+
+            <label>
+              Equipamento
+              <input id="equipmentSearch" type="text" list="fleetOptions" placeholder="Digite equipamento ou placa" required autocomplete="off" />
+              <small class="field-helper" id="fleetLookupStatus">A frota sera preenchida apos o login.</small>
+            </label>
+            <datalist id="fleetOptions"></datalist>
+
+            <div class="readonly-grid">
+              <label>Placa<input id="plate" type="text" readonly /></label>
+              <label>Filial<input id="branch" type="text" readonly /></label>
+            </div>
+
+            <label>Material<input id="materialName" type="text" placeholder="Oleo, filtro, peca..." required /></label>
+
+            <div class="date-grid">
+              <label>Quantidade<input id="quantity" type="number" min="0" step="0.01" placeholder="1" /></label>
+              <label>
+                Unidade
+                <select id="unit">
+                  <option value="un">un</option>
+                  <option value="lt">lt</option>
+                  <option value="kg">kg</option>
+                  <option value="kit">kit</option>
+                </select>
+              </label>
+            </div>
+
+            <label>
+              Tipo de manutencao
+              <select id="maintenanceType" required>
+                <option value="Preventiva">Preventiva</option>
+                <option value="Corretiva">Corretiva</option>
+                <option value="Estoque">Estoque</option>
+              </select>
+            </label>
+
+            <label>
+              Status
+              <select id="status" required>
+                <option value="Solicitado">Solicitado</option>
+                <option value="Disponivel">Disponivel</option>
+                <option value="Retirado">Retirado</option>
+                <option value="Cancelado">Cancelado</option>
+              </select>
+            </label>
+
+            <div class="date-grid">
+              <label>Solicitacao<input id="requestedAt" type="date" required /></label>
+              <label>Disponivel<input id="availableAt" type="date" /></label>
+              <label>Retirada<input id="pickedUpAt" type="date" /></label>
+            </div>
+
+            <label>Fornecedor / almoxarifado<input id="supplier" type="text" placeholder="Almoxarifado, fornecedor ou observacao curta" /></label>
+            <label>Observacoes<textarea id="notes" rows="3" placeholder="Pendencias, causa do atraso, OS vinculada..."></textarea></label>
+
+            <div class="form-actions">
+              <button class="secondary-button" id="resetFormButton" type="button">Limpar</button>
+              <button class="primary-button" id="saveMaterialButton" type="submit" disabled>Salvar material</button>
+            </div>
+          </form>
+        </aside>
+
+        <section class="content-panel corrective-list-panel">
+          <div class="toolbar">
+            <div class="search-box"><input id="materialSearch" type="search" placeholder="Buscar equipamento, placa, material, filial ou fornecedor" /></div>
+            <select id="materialStatusFilter" class="select-filter" aria-label="Status">
+              <option value="open">Abertos</option>
+              <option value="all">Todos</option>
+              <option value="Solicitado">Solicitados</option>
+              <option value="Disponivel">Disponiveis</option>
+              <option value="Retirado">Retirados</option>
+              <option value="Cancelado">Cancelados</option>
+            </select>
+            <select id="maintenanceTypeFilter" class="select-filter" aria-label="Tipo">
+              <option value="all">Todos os tipos</option>
+              <option value="Preventiva">Preventiva</option>
+              <option value="Corretiva">Corretiva</option>
+              <option value="Estoque">Estoque</option>
+            </select>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Equipamento</th><th>Material</th><th>Status</th><th>Solicitado</th><th>Disponivel</th><th>Retirado</th><th>Lead time</th><th>Acoes</th>
+                </tr>
+              </thead>
+              <tbody id="materialTableBody"></tbody>
+            </table>
+            <div class="empty-state" id="materialEmptyState">
+              <strong>Nenhum material cadastrado</strong>
+              <p>Registre uma solicitacao para acompanhar o gargalo do almoxarifado.</p>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <template id="materialRowTemplate">
+      <tr>
+        <td data-label="Equipamento"></td><td data-label="Material"></td><td data-label="Status"></td><td data-label="Solicitado"></td>
+        <td data-label="Disponivel"></td><td data-label="Retirado"></td><td data-label="Lead time"></td><td data-label="Acoes"></td>
+      </tr>
+    </template>
+
+    <script src="./firebase-config.js"></script>
+    <script type="module" src="./materiais.js?v=dev-materiais-1"></script>
+  </body>
+</html>
