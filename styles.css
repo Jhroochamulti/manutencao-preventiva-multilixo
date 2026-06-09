@@ -219,6 +219,56 @@ button {
   border-color: var(--green);
 }
 
+body.app-shell:not(.access-page) .auth-panel {
+  display: none;
+}
+
+.access-hero {
+  padding: clamp(24px, 4vw, 52px) clamp(16px, 4vw, 48px) 18px;
+}
+
+.access-hero h1 {
+  max-width: 760px;
+  margin: 0;
+  color: var(--purple);
+  font-size: clamp(34px, 5vw, 58px);
+  line-height: 1;
+}
+
+.access-hero p:not(.eyebrow) {
+  max-width: 680px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.access-card.auth-panel {
+  display: grid;
+  margin-top: 0;
+}
+
+.access-card.auth-panel > div:first-child {
+  display: block;
+}
+
+.access-card.auth-panel p:not(.eyebrow) {
+  display: block;
+}
+
+.access-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  grid-column: 1 / -1;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.access-actions .primary-button {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
 .portal-page {
   min-height: 100vh;
   background: linear-gradient(180deg, #ffffff 0%, #f7f5f8 56%, #f4fad5 100%);

@@ -42,11 +42,12 @@ Os dados sao salvos no navegador pelo `localStorage`, na chave:
 ## Arquivos do site
 
 - `portal.html`: entrada do sistema, separando paineis de operacao e paineis de analise.
+- `acesso.html`: tela centralizada de login da aplicacao.
 - `mtr.html`: painel geral executivo com indicadores consolidados da manutencao.
 - `VTR_MTR_REFERENCIA.md`: resumo da planilha VTR/MTR usada como referencia funcional.
 - `index.html`: painel principal e formulario de cadastro.
-- `geral.html`: informacoes gerais, dashboards, filtros e tabela analitica.
-- `painel-preventivas.html`: painel geral alimentado por Google Sheets publicado como CSV.
+- `geral.html`: pagina legada de informacoes gerais das preventivas.
+- `painel-preventivas.html`: pagina legada alimentada por Google Sheets publicado como CSV.
 - `styles.css`: estilos e identidade visual Multilixo.
 - `app.js`: logica do painel principal.
 - `geral.js`: logica da pagina de informacoes gerais.

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Acesso | Sistema de Manutencao Multilixo</title>
+    <link rel="stylesheet" href="./styles.css?v=dev-acesso-1" />
+  </head>
+  <body class="app-shell access-page">
+    <header class="app-header">
+      <div class="brand" aria-label="Grupo Multilixo">
+        <img class="brand-logo" src="./assets/logo-multilixo.png" alt="Grupo Multilixo" />
+      </div>
+      <nav class="top-actions" aria-label="Modulos">
+        <a class="secondary-link" href="./portal.html?v=dev-portal-1">Inicio</a>
+        <a class="secondary-link active-link" href="./acesso.html?v=dev-acesso-1">Acesso</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="access-hero">
+        <div>
+          <p class="eyebrow">Entrada do sistema</p>
+          <h1>Acesso centralizado</h1>
+          <p>Entre uma vez para carregar os dados online e navegar pelos paineis de operacao e analise.</p>
+        </div>
+      </section>
+
+      <section class="access-card auth-panel" aria-labelledby="authTitle">
+        <div>
+          <p class="eyebrow">Acesso restrito</p>
+          <h2 id="authTitle">Login da aplicacao</h2>
+          <p>Use o usuario criado no Firebase Authentication.</p>
+        </div>
+        <form id="loginForm" class="auth-form">
+          <label>
+            E-mail
+            <input id="loginEmail" type="email" autocomplete="email" placeholder="seu@email.com" required />
+          </label>
+          <label>
+            Senha
+            <input id="loginPassword" type="password" autocomplete="current-password" required />
+          </label>
+          <button class="primary-button" type="submit">Entrar</button>
+          <button class="secondary-button" id="logoutButton" type="button" hidden>Sair</button>
+        </form>
+        <div class="auth-status" id="authStatus">Aguardando login.</div>
+        <div class="access-actions">
+          <a class="secondary-link" href="./portal.html?v=dev-portal-1">Voltar ao inicio</a>
+          <a class="primary-button" href="./mtr.html?v=dev-mtr-redesign-2">Abrir Painel MTR</a>
+        </div>
+      </section>
+    </main>
+
+    <script src="./firebase-config.js"></script>
+    <script type="module" src="./acesso.js?v=dev-acesso-1"></script>
+  </body>
+</html>
