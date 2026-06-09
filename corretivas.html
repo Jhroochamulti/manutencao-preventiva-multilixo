@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Corretivas | Sistema de Manutencao Multilixo</title>
+    <link rel="stylesheet" href="./styles.css?v=dev-corretivas-1" />
+  </head>
+  <body class="app-shell corrective-page">
+    <header class="app-header">
+      <div class="brand" aria-label="Grupo Multilixo">
+        <img class="brand-logo" src="./assets/logo-multilixo.png" alt="Grupo Multilixo" />
+      </div>
+      <nav class="top-actions" aria-label="Modulos">
+        <a class="secondary-link" href="./index.html?v=54">Preventivas</a>
+        <a class="secondary-link" href="./frota.html?v=dev-frota-4">Frota</a>
+        <a class="secondary-link active-link" href="./corretivas.html">Corretivas</a>
+        <a class="secondary-link" href="./geral.html?v=54">Informacoes gerais</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="module-hero">
+        <div>
+          <p class="eyebrow">Manutencao corretiva</p>
+          <h1>Chamados corretivos</h1>
+          <p>
+            Registre falhas da frota, acompanhe prioridades, equipamentos parados e tempo de atendimento.
+          </p>
+        </div>
+        <div class="dev-status">
+          <strong>Ambiente de desenvolvimento</strong>
+          <span>Modulo conectado ao Firebase e mantido fora da versao publicada ate sua aprovacao.</span>
+        </div>
+      </section>
+
+      <section class="auth-panel" aria-labelledby="authTitle">
+        <div>
+          <p class="eyebrow">Acesso restrito</p>
+          <h2 id="authTitle">Login da aplicacao</h2>
+          <p>Entre para abrir, editar e consultar chamados corretivos.</p>
+        </div>
+        <form id="loginForm" class="auth-form">
+          <label>
+            E-mail
+            <input id="loginEmail" type="email" autocomplete="email" placeholder="seu@email.com" required />
+          </label>
+          <label>
+            Senha
+            <input id="loginPassword" type="password" autocomplete="current-password" required />
+          </label>
+          <button class="primary-button" type="submit">Entrar</button>
+          <button class="secondary-button" id="logoutButton" type="button" hidden>Sair</button>
+        </form>
+        <div class="auth-status" id="authStatus">Aguardando login.</div>
+      </section>
+
+      <section class="fleet-metrics corrective-metrics" aria-label="Indicadores de corretivas">
+        <article>
+          <span>Chamados abertos</span>
+          <strong id="openCount">0</strong>
+        </article>
+        <article>
+          <span>Equipamentos parados</span>
+          <strong id="stoppedCount">0</strong>
+        </article>
+        <article>
+          <span>Alta/Critica</span>
+          <strong id="criticalCount">0</strong>
+        </article>
+        <article>
+          <span>SLA medio</span>
+          <strong id="averageSla">0h</strong>
+        </article>
+      </section>
+
+      <section class="corrective-workspace">
+        <aside class="form-panel corrective-form-panel">
+          <div class="panel-title">
+            <div>
+              <p class="eyebrow">Novo chamado</p>
+              <h2 id="formTitle">Corretiva</h2>
+            </div>
+          </div>
+
+          <form id="correctiveForm">
+            <input type="hidden" id="correctiveId" />
+
+            <label>
+              Equipamento
+              <input id="equipmentSearch" type="text" list="fleetOptions" placeholder="Digite equipamento ou placa" required autocomplete="off" />
+              <small class="field-helper" id="fleetLookupStatus">A frota sera preenchida apos o login.</small>
+            </label>
+            <datalist id="fleetOptions"></datalist>
+
+            <div class="readonly-grid">
+              <label>
+                Placa
+                <input id="plate" type="text" readonly />
+              </label>
+              <label>
+                Filial
+                <input id="branch" type="text" readonly />
+              </label>
+              <label>
+                Modelo
+                <input id="model" type="text" readonly />
+              </label>
+              <label>
+                Classe operacional
+                <input id="operationalClass" type="text" readonly />
+              </label>
+            </div>
+
+            <label>
+              Tipo de falha
+              <select id="failureType" required>
+                <option value="Mecanica">Mecanica</option>
+                <option value="Eletrica">Eletrica</option>
+                <option value="Hidraulica">Hidraulica</option>
+                <option value="Pneus">Pneus</option>
+                <option value="Implemento">Implemento</option>
+                <option value="Outro">Outro</option>
+              </select>
+            </label>
+
+            <div class="date-grid">
+              <label>
+                Prioridade
+                <select id="priority" required>
+                  <option value="Baixa">Baixa</option>
+                  <option value="Media" selected>Media</option>
+                  <option value="Alta">Alta</option>
+                  <option value="Critica">Critica</option>
+                </select>
+              </label>
+              <label>
+                Status
+                <select id="status" required>
+                  <option value="Aberto">Aberto</option>
+                  <option value="Em atendimento">Em atendimento</option>
+                  <option value="Aguardando peca">Aguardando peca</option>
+                  <option value="Concluido">Concluido</option>
+                  <option value="Cancelado">Cancelado</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="check-row">
+              <input id="isStopped" type="checkbox" />
+              Equipamento parado
+            </label>
+
+            <div class="date-grid">
+              <label>
+                Abertura
+                <input id="openedAt" type="datetime-local" required />
+              </label>
+              <label>
+                Inicio atendimento
+                <input id="startedAt" type="datetime-local" />
+              </label>
+              <label>
+                Conclusao
+                <input id="finishedAt" type="datetime-local" />
+              </label>
+            </div>
+
+            <label>
+              Responsavel
+              <input id="assignedTo" type="text" placeholder="Mecanico, equipe ou oficina" />
+            </label>
+
+            <label>
+              Descricao da falha
+              <textarea id="description" rows="3" placeholder="Descreva o problema relatado" required></textarea>
+            </label>
+
+            <label>
+              Observacoes
+              <textarea id="notes" rows="3" placeholder="Peca pendente, causa, acao tomada..."></textarea>
+            </label>
+
+            <div class="form-actions">
+              <button class="secondary-button" id="resetFormButton" type="button">Limpar</button>
+              <button class="primary-button" id="saveCorrectiveButton" type="submit" disabled>Salvar corretiva</button>
+            </div>
+          </form>
+        </aside>
+
+        <section class="content-panel corrective-list-panel">
+          <div class="toolbar">
+            <div class="search-box">
+              <input id="correctiveSearch" type="search" placeholder="Buscar equipamento, placa, falha, filial ou responsavel" />
+            </div>
+            <select id="correctiveStatusFilter" class="select-filter" aria-label="Status">
+              <option value="open">Abertos</option>
+              <option value="all">Todos</option>
+              <option value="Concluido">Concluidos</option>
+              <option value="Cancelado">Cancelados</option>
+            </select>
+            <select id="correctivePriorityFilter" class="select-filter" aria-label="Prioridade">
+              <option value="all">Todas prioridades</option>
+              <option value="Critica">Critica</option>
+              <option value="Alta">Alta</option>
+              <option value="Media">Media</option>
+              <option value="Baixa">Baixa</option>
+            </select>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Equipamento</th>
+                  <th>Falha</th>
+                  <th>Prioridade</th>
+                  <th>Status</th>
+                  <th>Aberto em</th>
+                  <th>SLA</th>
+                  <th>Parado</th>
+                  <th>Acoes</th>
+                </tr>
+              </thead>
+              <tbody id="correctiveTableBody"></tbody>
+            </table>
+            <div class="empty-state" id="correctiveEmptyState">
+              <strong>Nenhuma corretiva cadastrada</strong>
+              <p>Abra o primeiro chamado para acompanhar a manutencao corretiva.</p>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <template id="correctiveRowTemplate">
+      <tr>
+        <td data-label="Equipamento"></td>
+        <td data-label="Falha"></td>
+        <td data-label="Prioridade"></td>
+        <td data-label="Status"></td>
+        <td data-label="Aberto em"></td>
+        <td data-label="SLA"></td>
+        <td data-label="Parado"></td>
+        <td data-label="Acoes"></td>
+      </tr>
+    </template>
+
+    <script src="./firebase-config.js"></script>
+    <script type="module" src="./corretivas.js?v=dev-corretivas-1"></script>
+  </body>
+</html>

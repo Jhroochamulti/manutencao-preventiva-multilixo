@@ -59,6 +59,14 @@ Campos previstos:
 - `createdAt`
 - `updatedAt`
 
+Status previstos:
+
+- `Aberto`
+- `Em atendimento`
+- `Aguardando peca`
+- `Concluido`
+- `Cancelado`
+
 ### `correctives`
 
 Chamados e manutencoes corretivas.

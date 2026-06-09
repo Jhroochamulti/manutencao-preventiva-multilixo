@@ -518,6 +518,70 @@ main {
   color: var(--danger);
 }
 
+.corrective-workspace {
+  display: grid;
+  grid-template-columns: minmax(320px, 430px) minmax(0, 1fr);
+  gap: 22px;
+  padding: 0 clamp(16px, 4vw, 48px) 24px;
+}
+
+.corrective-form-panel,
+.corrective-list-panel {
+  align-self: start;
+}
+
+.corrective-form-panel .readonly-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.readonly-grid input[readonly] {
+  color: var(--muted);
+  background: #f6f7f9;
+}
+
+.check-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  font-weight: 800;
+  color: var(--purple);
+}
+
+.check-row input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--purple);
+}
+
+.corrective-metrics article:nth-child(2) {
+  border-top-color: var(--orange);
+}
+
+.corrective-metrics article:nth-child(3) {
+  border-top-color: var(--danger);
+}
+
+.priority-pill.low {
+  color: var(--green-dark);
+  background: rgba(191, 221, 37, 0.18);
+  border: 1px solid rgba(101, 121, 0, 0.2);
+}
+
+.priority-pill.critical {
+  color: #991b1b;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+}
+
+.status-pill.cancelled {
+  color: #475467;
+  background: #f2f4f7;
+  border: 1px solid #d0d5dd;
+}
+
 @media (max-width: 980px) {
   .module-hero,
   .auth-panel,
@@ -1715,7 +1779,8 @@ button.line-segment:hover {
 
 @media (max-width: 1040px) {
   .dashboard-band,
-  .workspace {
+  .workspace,
+  .corrective-workspace {
     grid-template-columns: 1fr;
   }
 }
@@ -1771,8 +1836,17 @@ button.line-segment:hover {
   }
 
   .content-panel,
-  .form-panel {
+  .form-panel,
+  .corrective-form-panel {
     padding: 14px;
+  }
+
+  .corrective-workspace {
+    padding-inline: 14px;
+  }
+
+  .corrective-form-panel .readonly-grid {
+    grid-template-columns: 1fr;
   }
 
   table {
