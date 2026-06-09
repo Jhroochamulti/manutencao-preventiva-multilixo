@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Painel MTR | Sistema de Manutencao Multilixo</title>
+    <link rel="stylesheet" href="./styles.css?v=dev-mtr-1" />
+  </head>
+  <body class="app-shell mtr-page">
+    <header class="app-header">
+      <div class="brand" aria-label="Grupo Multilixo">
+        <img class="brand-logo" src="./assets/logo-multilixo.png" alt="Grupo Multilixo" />
+      </div>
+      <nav class="top-actions" aria-label="Modulos">
+        <a class="secondary-link" href="./portal.html?v=dev-portal-1">Inicio</a>
+        <div class="nav-group" aria-label="Operacao">
+          <span class="nav-label">Operacao</span>
+          <a class="secondary-link" href="./index.html?v=54">Preventivas</a>
+          <a class="secondary-link" href="./frota.html?v=dev-frota-4">Frota</a>
+          <a class="secondary-link" href="./corretivas.html?v=dev-corretivas-1">Corretivas</a>
+          <a class="secondary-link" href="./materiais.html?v=dev-materiais-1">Materiais</a>
+          <a class="secondary-link" href="./usuarios.html?v=dev-usuarios-1">Usuarios</a>
+        </div>
+        <div class="nav-group" aria-label="Analises">
+          <span class="nav-label">Analises</span>
+          <a class="secondary-link active-link" href="./mtr.html?v=dev-mtr-1">Painel MTR</a>
+          <a class="secondary-link" href="./dashboard.html?v=dev-dashboard-1">Dashboard</a>
+          <a class="secondary-link" href="./sla.html?v=dev-sla-1">SLA</a>
+          <a class="secondary-link" href="./relatorios.html?v=dev-relatorios-1">Relatorios</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="module-hero">
+        <div>
+          <p class="eyebrow">Painel geral executivo</p>
+          <h1>Painel MTR da manutencao</h1>
+          <p>Visao unica dos principais indicadores da manutencao: frota, corretivas, materiais, preventivas, SLA e gargalos.</p>
+        </div>
+        <div class="dev-status">
+          <strong>Leitura gerencial</strong>
+          <span>Indicadores consolidados para acompanhamento rapido e tomada de decisao.</span>
+        </div>
+      </section>
+
+      <section class="auth-panel" aria-labelledby="authTitle">
+        <div>
+          <p class="eyebrow">Acesso restrito</p>
+          <h2 id="authTitle">Login da aplicacao</h2>
+          <p>Entre para carregar os dados online.</p>
+        </div>
+        <form id="loginForm" class="auth-form">
+          <label>
+            E-mail
+            <input id="loginEmail" type="email" autocomplete="email" placeholder="seu@email.com" required />
+          </label>
+          <label>
+            Senha
+            <input id="loginPassword" type="password" autocomplete="current-password" required />
+          </label>
+          <button class="primary-button" type="submit">Entrar</button>
+          <button class="secondary-button" id="logoutButton" type="button" hidden>Sair</button>
+        </form>
+        <div class="auth-status" id="authStatus">Aguardando login.</div>
+      </section>
+
+      <section class="dashboard-filters mtr-filters">
+        <div class="search-box">
+          <input id="mtrSearch" type="search" placeholder="Buscar por filial, equipamento, placa ou classe" />
+        </div>
+        <select id="branchFilter" class="select-filter" aria-label="Filial">
+          <option value="all">Todas as filiais</option>
+        </select>
+        <select id="categoryFilter" class="select-filter" aria-label="Categoria">
+          <option value="all">Todas categorias</option>
+          <option value="caminhao">Caminhoes</option>
+          <option value="maquina">Maquinas</option>
+          <option value="utilitario">Utilitarios</option>
+          <option value="gerador">Geradores</option>
+          <option value="outro">Outros</option>
+        </select>
+      </section>
+
+      <section class="mtr-scoreboard" aria-label="Indicadores gerais">
+        <article><span>Frota ativa</span><strong id="kpiFleet">0</strong><small id="kpiFleetMix">0 caminhoes | 0 maquinas</small></article>
+        <article><span>Corretivas abertas</span><strong id="kpiCorrectives">0</strong><small id="kpiStopped">0 equipamento(s) parado(s)</small></article>
+        <article><span>Materiais pendentes</span><strong id="kpiMaterials">0</strong><small id="kpiMaterialsLate">0 fora da meta</small></article>
+        <article><span>SLA fora da meta</span><strong id="kpiSlaLate">0</strong><small id="kpiSlaRate">0% dos itens monitorados</small></article>
+        <article><span>Preventivas abertas</span><strong id="kpiPreventives">0</strong><small id="kpiPreventiveGap">0 com etapa pendente</small></article>
+      </section>
+
+      <section class="mtr-grid" aria-label="Graficos do painel geral">
+        <article class="chart-card mtr-wide">
+          <div class="panel-title">
+            <div>
+              <p class="eyebrow">Saude operacional</p>
+              <h2>Distribuicao dos itens monitorados</h2>
+            </div>
+          </div>
+          <div id="healthChart" class="mtr-health"></div>
+        </article>
+
+        <article class="chart-card">
+          <div class="panel-title">
+            <div>
+              <p class="eyebrow">Frota</p>
+              <h2>Composicao por tipo</h2>
+            </div>
+          </div>
+          <div class="donut-layout compact">
+            <div id="fleetDonut" class="donut-chart"></div>
+            <div id="fleetLegend" class="chart-legend"></div>
+          </div>
+        </article>
+
+        <article class="chart-card">
+          <div class="panel-title">
+            <div>
+              <p class="eyebrow">Gargalos</p>
+              <h2>Filiais com maior pressao</h2>
+            </div>
+          </div>
+          <div id="branchPressure" class="bar-chart-list"></div>
+        </article>
+
+        <article class="chart-card">
+          <div class="panel-title">
+            <div>
+              <p class="eyebrow">Prioridade</p>
+              <h2>Corretivas abertas</h2>
+            </div>
+          </div>
+          <div id="priorityColumns" class="column-chart"></div>
+        </article>
+
+        <article class="chart-card mtr-wide">
+          <div class="panel-title">
+            <div>
+              <p class="eyebrow">Top gargalos</p>
+              <h2>Equipamentos que mais exigem atencao</h2>
+            </div>
+          </div>
+          <div id="assetBottlenecks" class="mtr-bottlenecks"></div>
+        </article>
+      </section>
+    </main>
+
+    <script src="./firebase-config.js"></script>
+    <script type="module" src="./mtr.js?v=dev-mtr-1"></script>
+  </body>
+</html>

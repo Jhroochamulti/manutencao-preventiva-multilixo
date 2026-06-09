@@ -1013,6 +1013,121 @@ main {
   font-weight: 700;
 }
 
+.mtr-scoreboard {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  padding: 0 clamp(16px, 4vw, 48px) 22px;
+}
+
+.mtr-scoreboard article {
+  min-height: 126px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--purple);
+  border-radius: 8px;
+  background: var(--white);
+  box-shadow: var(--clean-shadow);
+}
+
+.mtr-scoreboard article:nth-child(1) {
+  border-top-color: var(--green);
+}
+
+.mtr-scoreboard article:nth-child(3) {
+  border-top-color: var(--orange);
+}
+
+.mtr-scoreboard article:nth-child(4) {
+  border-top-color: var(--danger);
+}
+
+.mtr-scoreboard span,
+.mtr-scoreboard small {
+  display: block;
+  color: var(--muted);
+}
+
+.mtr-scoreboard strong {
+  display: block;
+  margin: 10px 0 6px;
+  color: var(--purple);
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.mtr-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  padding: 0 clamp(16px, 4vw, 48px) 32px;
+}
+
+.mtr-wide {
+  grid-column: span 2;
+}
+
+.mtr-health {
+  margin-top: 22px;
+}
+
+.mtr-track {
+  height: 34px;
+}
+
+.donut-layout.compact {
+  grid-template-columns: 132px minmax(0, 1fr);
+}
+
+.donut-layout.compact .donut-chart {
+  width: 132px;
+}
+
+.mtr-bottlenecks {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.mtr-bottleneck-row {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 54px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.mtr-bottleneck-row b {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  color: var(--ink);
+  border-radius: 999px;
+  background: var(--green);
+}
+
+.mtr-bottleneck-row strong,
+.mtr-bottleneck-row span {
+  display: block;
+}
+
+.mtr-bottleneck-row span {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.mtr-bottleneck-row em {
+  color: var(--purple);
+  font-style: normal;
+  font-weight: 800;
+}
+
 .analysis-card {
   min-width: 0;
 }
@@ -1079,8 +1194,14 @@ main {
   .fleet-metrics,
   .operation-grid,
   .dashboard-chart-grid,
+  .mtr-scoreboard,
+  .mtr-grid,
   .sync-summary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mtr-wide {
+    grid-column: span 2;
   }
 }
 
@@ -1093,8 +1214,14 @@ main {
   .fleet-metrics,
   .operation-grid,
   .dashboard-chart-grid,
+  .mtr-scoreboard,
+  .mtr-grid,
   .sync-summary {
     grid-template-columns: 1fr;
+  }
+
+  .mtr-wide {
+    grid-column: auto;
   }
 
   .donut-layout {

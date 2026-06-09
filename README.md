@@ -42,6 +42,7 @@ Os dados sao salvos no navegador pelo `localStorage`, na chave:
 ## Arquivos do site
 
 - `portal.html`: entrada do sistema, separando paineis de operacao e paineis de analise.
+- `mtr.html`: painel geral executivo com indicadores consolidados da manutencao.
 - `index.html`: painel principal e formulario de cadastro.
 - `geral.html`: informacoes gerais, dashboards, filtros e tabela analitica.
 - `painel-preventivas.html`: painel geral alimentado por Google Sheets publicado como CSV.
