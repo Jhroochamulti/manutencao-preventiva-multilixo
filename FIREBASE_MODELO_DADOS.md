@@ -121,7 +121,7 @@ Status previstos:
 
 Cadastro complementar dos usuarios autenticados pelo Firebase Authentication.
 
-ID recomendado: `uid` do Firebase Auth.
+ID recomendado: e-mail em minusculo ou `uid` do Firebase Auth.
 
 Campos:
 
@@ -130,6 +130,8 @@ Campos:
 - `role`
 - `branches`
 - `active`
+- `createdBy`
+- `updatedBy`
 - `createdAt`
 - `updatedAt`
 

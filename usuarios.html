@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Usuarios | Sistema de Manutencao Multilixo</title>
+    <link rel="stylesheet" href="./styles.css?v=dev-usuarios-1" />
+  </head>
+  <body class="app-shell users-page">
+    <header class="app-header">
+      <div class="brand" aria-label="Grupo Multilixo">
+        <img class="brand-logo" src="./assets/logo-multilixo.png" alt="Grupo Multilixo" />
+      </div>
+      <nav class="top-actions" aria-label="Modulos">
+        <a class="secondary-link" href="./dashboard.html?v=dev-dashboard-1">Dashboard</a>
+        <a class="secondary-link" href="./frota.html?v=dev-frota-4">Frota</a>
+        <a class="secondary-link" href="./corretivas.html?v=dev-corretivas-1">Corretivas</a>
+        <a class="secondary-link" href="./materiais.html?v=dev-materiais-1">Materiais</a>
+        <a class="secondary-link" href="./sla.html?v=dev-sla-1">SLA</a>
+        <a class="secondary-link" href="./relatorios.html?v=dev-relatorios-1">Relatorios</a>
+        <a class="secondary-link active-link" href="./usuarios.html?v=dev-usuarios-1">Usuarios</a>
+        <a class="secondary-link" href="./index.html?v=54">Preventivas</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="module-hero">
+        <div>
+          <p class="eyebrow">Acessos e permissoes</p>
+          <h1>Usuarios</h1>
+          <p>Organize perfis de acesso por funcao, filial e status para preparar a aplicacao para uso controlado pela equipe.</p>
+        </div>
+        <div class="dev-status">
+          <strong>Ambiente de desenvolvimento</strong>
+          <span>Cadastro complementar conectado ao Firebase, ainda sem publicacao oficial.</span>
+        </div>
+      </section>
+
+      <section class="auth-panel" aria-labelledby="authTitle">
+        <div>
+          <p class="eyebrow">Acesso restrito</p>
+          <h2 id="authTitle">Login da aplicacao</h2>
+          <p>Entre para consultar e atualizar os perfis cadastrados no Firestore.</p>
+        </div>
+        <form id="loginForm" class="auth-form">
+          <label>
+            E-mail
+            <input id="loginEmail" type="email" autocomplete="email" placeholder="seu@email.com" required />
+          </label>
+          <label>
+            Senha
+            <input id="loginPassword" type="password" autocomplete="current-password" required />
+          </label>
+          <button class="primary-button" type="submit">Entrar</button>
+          <button class="secondary-button" id="logoutButton" type="button" hidden>Sair</button>
+        </form>
+        <div class="auth-status" id="authStatus">Aguardando login.</div>
+      </section>
+
+      <section class="fleet-metrics users-metrics" aria-label="Indicadores de usuarios">
+        <article><span>Usuarios cadastrados</span><strong id="userTotal">0</strong></article>
+        <article><span>Ativos</span><strong id="userActive">0</strong></article>
+        <article><span>Administradores</span><strong id="userAdmins">0</strong></article>
+        <article><span>Leitura gerencial</span><strong id="userReaders">0</strong></article>
+      </section>
+
+      <section class="content-panel user-form-panel" aria-labelledby="userFormTitle">
+        <div class="panel-title">
+          <div>
+            <p class="eyebrow">Cadastro</p>
+            <h2 id="userFormTitle">Perfil de acesso</h2>
+          </div>
+          <button class="secondary-button" id="clearUserFormButton" type="button">Limpar formulario</button>
+        </div>
+
+        <form id="userForm" class="maintenance-form">
+          <input id="userDocId" type="hidden" />
+          <div class="form-grid">
+            <label>
+              Nome
+              <input id="userName" type="text" placeholder="Nome do usuario" required />
+            </label>
+            <label>
+              E-mail
+              <input id="userEmail" type="email" placeholder="usuario@empresa.com.br" required />
+            </label>
+            <label>
+              Perfil
+              <select id="userRole" required>
+                <option value="admin">Administrador</option>
+                <option value="planejamento">Planejamento</option>
+                <option value="almoxarifado">Almoxarifado</option>
+                <option value="manutencao">Manutencao</option>
+                <option value="diretoria">Diretoria</option>
+              </select>
+            </label>
+            <label>
+              Status
+              <select id="userActiveSelect" required>
+                <option value="true">Ativo</option>
+                <option value="false">Inativo</option>
+              </select>
+            </label>
+            <label class="span-2">
+              Filiais permitidas
+              <input id="userBranches" type="text" placeholder="Ex.: Sao Paulo, Guarulhos, Santos ou Todas" />
+            </label>
+          </div>
+          <div class="form-actions">
+            <button class="primary-button" id="saveUserButton" type="submit" disabled>Salvar perfil</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="content-panel users-list-panel">
+        <div class="toolbar">
+          <div class="search-box">
+            <input id="userSearch" type="search" placeholder="Buscar por nome, e-mail, perfil ou filial" />
+          </div>
+          <select id="roleFilter" class="select-filter" aria-label="Perfil">
+            <option value="all">Todos os perfis</option>
+            <option value="admin">Administrador</option>
+            <option value="planejamento">Planejamento</option>
+            <option value="almoxarifado">Almoxarifado</option>
+            <option value="manutencao">Manutencao</option>
+            <option value="diretoria">Diretoria</option>
+          </select>
+          <select id="userStatusFilter" class="select-filter" aria-label="Status">
+            <option value="active">Ativos</option>
+            <option value="all">Todos</option>
+            <option value="inactive">Inativos</option>
+          </select>
+        </div>
+
+        <div class="table-wrap is-empty">
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>E-mail</th>
+                <th>Perfil</th>
+                <th>Filiais</th>
+                <th>Status</th>
+                <th>Acoes</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody"></tbody>
+          </table>
+          <div class="empty-state">
+            <strong>Entre para carregar os usuarios</strong>
+            <p>Os perfis de acesso serao exibidos apos o login.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <template id="userRowTemplate">
+      <tr>
+        <td data-label="Nome"></td>
+        <td data-label="E-mail"></td>
+        <td data-label="Perfil"></td>
+        <td data-label="Filiais"></td>
+        <td data-label="Status"></td>
+        <td data-label="Acoes" class="table-actions"></td>
+      </tr>
+    </template>
+
+    <script src="./firebase-config.js"></script>
+    <script type="module" src="./usuarios.js?v=dev-usuarios-1"></script>
+  </body>
+</html>
