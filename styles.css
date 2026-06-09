@@ -436,6 +436,71 @@ main {
   color: #9a4a06;
 }
 
+.auth-panel {
+  grid-template-columns: minmax(340px, 1fr) minmax(220px, 0.55fr);
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  border-top: 0;
+  box-shadow: none;
+}
+
+.auth-panel > div:first-child {
+  display: none;
+}
+
+.auth-panel .eyebrow {
+  margin-bottom: 2px;
+  font-size: 0.68rem;
+}
+
+.auth-panel h2 {
+  font-size: 1rem;
+}
+
+.auth-panel p:not(.eyebrow) {
+  display: none;
+}
+
+.auth-form {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr) auto auto;
+}
+
+.auth-form label {
+  gap: 4px;
+  font-size: 0.78rem;
+}
+
+.auth-form input {
+  min-height: 36px;
+}
+
+.auth-form .primary-button,
+.auth-form .secondary-button {
+  min-height: 36px;
+  padding: 0 14px;
+}
+
+.auth-form.signed {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.auth-form.signed label,
+.auth-form.signed button[type="submit"] {
+  display: none;
+}
+
+.auth-form.signed .secondary-button {
+  display: inline-flex;
+}
+
+.auth-status {
+  min-height: 36px;
+  padding: 8px 10px;
+  font-size: 0.82rem;
+}
+
 .import-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -1984,5 +2049,39 @@ button.line-segment:hover {
 
   .general-page .spreadsheet-table td::before {
     content: none;
+  }
+}
+
+@media (max-width: 1040px) {
+  .auth-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-form {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr) auto auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .auth-form {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .auth-form label {
+    gap: 0;
+    font-size: 0;
+  }
+
+  .auth-form input {
+    font-size: 0.88rem;
+  }
+
+  .auth-form .primary-button,
+  .auth-form .secondary-button {
+    width: 100%;
+  }
+
+  .auth-status {
+    font-size: 0.78rem;
   }
 }
