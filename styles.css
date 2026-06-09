@@ -74,6 +74,30 @@ button {
   gap: 10px;
 }
 
+.top-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.nav-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  border: 1px solid rgba(110, 55, 129, 0.12);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.nav-label {
+  padding: 0 6px;
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
 .primary-button,
 .secondary-button,
 .filter-button,
@@ -670,6 +694,205 @@ main {
   margin: 0 clamp(16px, 4vw, 48px) 22px;
 }
 
+.dashboard-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0 clamp(16px, 4vw, 48px) 22px;
+}
+
+.chart-card {
+  min-width: 0;
+  min-height: 280px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+  box-shadow: var(--clean-shadow);
+}
+
+.chart-card h2 {
+  margin: 0;
+  color: var(--purple);
+  font-size: 1.04rem;
+}
+
+.donut-layout {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  margin-top: 18px;
+}
+
+.donut-chart {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 150px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: conic-gradient(#eef2f6 0 100%);
+}
+
+.donut-chart::before {
+  content: "";
+  width: 78px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--white);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.donut-chart::after {
+  content: attr(data-total);
+  position: absolute;
+  color: var(--purple);
+  font-size: 1.55rem;
+  font-weight: 800;
+}
+
+.chart-legend {
+  display: grid;
+  gap: 9px;
+}
+
+.chart-legend.compact {
+  margin-top: 16px;
+}
+
+.chart-legend-row {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.chart-legend-row i {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+}
+
+.chart-legend-row span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chart-legend-row strong {
+  color: var(--ink);
+}
+
+.stacked-chart {
+  margin-top: 26px;
+}
+
+.stacked-track {
+  display: flex;
+  overflow: hidden;
+  height: 30px;
+  border-radius: 999px;
+  background: #eef2f6;
+}
+
+.stacked-track span {
+  min-width: 2px;
+}
+
+.bar-chart-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.chart-bar-row {
+  display: grid;
+  gap: 7px;
+}
+
+.chart-bar-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 0.84rem;
+}
+
+.chart-bar-meta strong {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chart-bar-meta span {
+  color: var(--purple);
+  font-weight: 800;
+}
+
+.chart-bar-track {
+  overflow: hidden;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(110, 55, 129, 0.1);
+}
+
+.chart-bar-track i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--purple), var(--green));
+}
+
+.column-chart {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  align-items: end;
+  min-height: 190px;
+  margin-top: 18px;
+}
+
+.column-item {
+  display: grid;
+  gap: 7px;
+  justify-items: center;
+  min-width: 0;
+}
+
+.column-track {
+  display: flex;
+  align-items: end;
+  width: 100%;
+  height: 120px;
+  padding: 4px;
+  border-radius: 8px;
+  background: #f2f4f7;
+}
+
+.column-track i {
+  display: block;
+  width: 100%;
+  min-height: 8px;
+  border-radius: 6px;
+}
+
+.column-item strong {
+  color: var(--purple);
+  font-size: 1.15rem;
+}
+
+.column-item span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
 .analysis-card {
   min-width: 0;
 }
@@ -735,6 +958,7 @@ main {
 
   .fleet-metrics,
   .operation-grid,
+  .dashboard-chart-grid,
   .sync-summary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -748,8 +972,14 @@ main {
 
   .fleet-metrics,
   .operation-grid,
+  .dashboard-chart-grid,
   .sync-summary {
     grid-template-columns: 1fr;
+  }
+
+  .donut-layout {
+    grid-template-columns: 1fr;
+    justify-items: center;
   }
 
   .import-actions {
@@ -2053,6 +2283,11 @@ button.line-segment:hover {
 }
 
 @media (max-width: 1040px) {
+  .nav-group {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
   .auth-panel {
     grid-template-columns: 1fr;
   }

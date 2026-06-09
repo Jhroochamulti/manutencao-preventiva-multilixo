@@ -141,6 +141,7 @@ function render() {
   const fleetIds = new Set(fleet.map((record) => record.id));
   const openCorrectives = filteredCorrectives(fleetIds);
   renderKpis(fleet, openCorrectives);
+  renderVisualAnalysis(fleet, openCorrectives);
   renderRanking("#branchRanking", countBy(fleet, "branch"), fleet.length, 10);
   renderRanking("#operationRanking", countBy(fleet, "operationalClass"), fleet.length, 10);
   renderPriorityRanking(openCorrectives);
@@ -158,6 +159,155 @@ function renderKpis(fleet, openCorrectives) {
   document.querySelector("#openCorrectives").textContent = openCorrectives.length;
   document.querySelector("#stoppedAssets").textContent = new Set(stopped.map((record) => record.fleetId)).size;
   document.querySelector("#averageSla").textContent = `${formatNumber(average)}h`;
+}
+
+function renderVisualAnalysis(fleet, openCorrectives) {
+  renderFleetCategoryDonut(fleet);
+  renderSlaStatusChart(openCorrectives);
+  renderBranchChart(fleet);
+  renderPriorityChart(openCorrectives);
+}
+
+function renderFleetCategoryDonut(fleet) {
+  const labels = {
+    caminhao: "Caminhoes",
+    maquina: "Maquinas",
+    utilitario: "Utilitarios",
+    gerador: "Geradores",
+    outro: "Outros"
+  };
+  const colors = {
+    caminhao: "#bfdd25",
+    maquina: "#6e3781",
+    utilitario: "#f18225",
+    gerador: "#2f80ed",
+    outro: "#98a2b3"
+  };
+  const donut = document.querySelector("#fleetCategoryDonut");
+  const legend = document.querySelector("#fleetCategoryLegend");
+  const entries = Object.entries(countBy(fleet, "category"))
+    .filter(([category]) => category !== "Sem informacao")
+    .sort((a, b) => b[1] - a[1]);
+  const total = fleet.length;
+
+  if (!total || !entries.length) {
+    donut.style.background = "conic-gradient(#eef2f6 0 100%)";
+    donut.dataset.total = "0";
+    legend.innerHTML = `<p class="empty-inline">Sem frota no filtro atual.</p>`;
+    return;
+  }
+
+  let cursor = 0;
+  const segments = entries.map(([category, count]) => {
+    const start = cursor;
+    const size = (count / total) * 100;
+    cursor += size;
+    return `${colors[category] || colors.outro} ${start}% ${cursor}%`;
+  });
+
+  donut.style.background = `conic-gradient(${segments.join(", ")})`;
+  donut.dataset.total = total;
+  legend.innerHTML = entries.map(([category, count]) => chartLegendRow(labels[category] || category, count, total, colors[category] || colors.outro)).join("");
+}
+
+function renderSlaStatusChart(openCorrectives) {
+  const container = document.querySelector("#slaStatusChart");
+  const total = openCorrectives.length;
+  const counts = openCorrectives.reduce((acc, record) => {
+    const elapsed = slaHours(record);
+    const goal = correctiveGoal(record.priority);
+    const key = elapsed <= goal ? "ok" : elapsed <= goal * 1.5 ? "attention" : "late";
+    acc[key] += 1;
+    return acc;
+  }, { ok: 0, attention: 0, late: 0 });
+
+  if (!total) {
+    container.innerHTML = `<p class="empty-inline">Sem corretivas abertas no filtro atual.</p>`;
+    return;
+  }
+
+  const items = [
+    ["ok", "Dentro da meta", counts.ok, "#bfdd25"],
+    ["attention", "Atencao", counts.attention, "#f18225"],
+    ["late", "Fora da meta", counts.late, "#d92d20"]
+  ];
+
+  container.innerHTML = `
+    <div class="stacked-track">
+      ${items.map(([key, label, count, color]) => {
+        const percent = total ? (count / total) * 100 : 0;
+        return `<span class="${key}" title="${escapeHtml(label)}: ${count}" style="width:${percent}%; background:${color}"></span>`;
+      }).join("")}
+    </div>
+    <div class="chart-legend compact">
+      ${items.map(([, label, count, color]) => chartLegendRow(label, count, total, color)).join("")}
+    </div>
+  `;
+}
+
+function renderBranchChart(fleet) {
+  const container = document.querySelector("#branchChart");
+  const entries = Object.entries(countBy(fleet, "branch"))
+    .sort((a, b) => b[1] - a[1] || naturalSort(a[0], b[0]))
+    .slice(0, 7);
+
+  if (!entries.length) {
+    container.innerHTML = `<p class="empty-inline">Sem filiais no filtro atual.</p>`;
+    return;
+  }
+
+  const max = Math.max(...entries.map(([, count]) => count), 1);
+  container.innerHTML = entries.map(([label, count]) => {
+    const percent = Math.round((count / max) * 100);
+    return `
+      <div class="chart-bar-row">
+        <div class="chart-bar-meta">
+          <strong>${escapeHtml(label || "Sem filial")}</strong>
+          <span>${count}</span>
+        </div>
+        <div class="chart-bar-track"><i style="width:${percent}%"></i></div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderPriorityChart(openCorrectives) {
+  const container = document.querySelector("#priorityChart");
+  const totals = countBy(openCorrectives, "priority");
+  const items = [
+    ["Critica", totals.Critica || 0, "#d92d20"],
+    ["Alta", totals.Alta || 0, "#f18225"],
+    ["Media", totals.Media || 0, "#6e3781"],
+    ["Baixa", totals.Baixa || 0, "#bfdd25"]
+  ];
+  const max = Math.max(...items.map(([, count]) => count), 0);
+
+  if (!max) {
+    container.innerHTML = `<p class="empty-inline">Sem corretivas abertas no filtro atual.</p>`;
+    return;
+  }
+
+  container.innerHTML = items.map(([label, count, color]) => {
+    const height = Math.max(8, Math.round((count / max) * 100));
+    return `
+      <div class="column-item">
+        <div class="column-track"><i style="height:${height}%; background:${color}"></i></div>
+        <strong>${count}</strong>
+        <span>${escapeHtml(label)}</span>
+      </div>
+    `;
+  }).join("");
+}
+
+function chartLegendRow(label, count, total, color) {
+  const percent = total ? Math.round((count / total) * 100) : 0;
+  return `
+    <div class="chart-legend-row">
+      <i style="background:${color}"></i>
+      <span>${escapeHtml(label)}</span>
+      <strong>${count} - ${percent}%</strong>
+    </div>
+  `;
 }
 
 function renderRanking(selector, counts, total, limit) {
@@ -293,6 +443,12 @@ function slaHours(record) {
   const end = record.finishedAt ? parseDate(record.finishedAt) : new Date();
   if (!start || !end) return 0;
   return Math.max(0, Math.round(((end - start) / 3600000) * 10) / 10);
+}
+
+function correctiveGoal(priority) {
+  if (priority === "Critica") return 4;
+  if (priority === "Alta") return 12;
+  return 24;
 }
 
 function parseDate(value) {
