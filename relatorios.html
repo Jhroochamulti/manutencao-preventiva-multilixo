@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Relatórios | Sistema de Manutenção Multilixo</title>
+    <link rel="stylesheet" href="./styles.css?v=dev-relatorios-1" />
+  </head>
+  <body class="app-shell reports-page">
+    <header class="app-header">
+      <div class="brand" aria-label="Grupo Multilixo">
+        <img class="brand-logo" src="./assets/logo-multilixo.png" alt="Grupo Multilixo" />
+      </div>
+      <nav class="top-actions" aria-label="Módulos">
+        <a class="secondary-link" href="./dashboard.html?v=dev-dashboard-1">Dashboard</a>
+        <a class="secondary-link" href="./frota.html?v=dev-frota-4">Frota</a>
+        <a class="secondary-link" href="./corretivas.html?v=dev-corretivas-1">Corretivas</a>
+        <a class="secondary-link" href="./materiais.html?v=dev-materiais-1">Materiais</a>
+        <a class="secondary-link" href="./sla.html?v=dev-sla-1">SLA</a>
+        <a class="secondary-link active-link" href="./relatorios.html?v=dev-relatorios-1">Relatórios</a>
+        <a class="secondary-link" href="./index.html?v=54">Preventivas</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="module-hero">
+        <div>
+          <p class="eyebrow">Análise e exportação</p>
+          <h1>Relatórios</h1>
+          <p>Gere visões consolidadas em CSV ou PDF para acompanhamento da frota e da manutenção.</p>
+        </div>
+        <div class="dev-status">
+          <strong>Ambiente de desenvolvimento</strong>
+          <span>Relatórios conectados ao Firebase, ainda sem publicação oficial.</span>
+        </div>
+      </section>
+
+      <section class="auth-panel" aria-labelledby="authTitle">
+        <div>
+          <p class="eyebrow">Acesso restrito</p>
+          <h2 id="authTitle">Login da aplicação</h2>
+          <p>Entre para carregar e exportar dados online.</p>
+        </div>
+        <form id="loginForm" class="auth-form">
+          <label>
+            E-mail
+            <input id="loginEmail" type="email" autocomplete="email" placeholder="seu@email.com" required />
+          </label>
+          <label>
+            Senha
+            <input id="loginPassword" type="password" autocomplete="current-password" required />
+          </label>
+          <button class="primary-button" type="submit">Entrar</button>
+          <button class="secondary-button" id="logoutButton" type="button" hidden>Sair</button>
+        </form>
+        <div class="auth-status" id="authStatus">Aguardando login.</div>
+      </section>
+
+      <section class="dashboard-filters report-filters">
+        <select id="reportType" class="select-filter" aria-label="Tipo de relatorio">
+          <option value="fleet">Frota</option>
+          <option value="correctives">Corretivas</option>
+          <option value="materials">Materiais</option>
+          <option value="sla">SLA</option>
+        </select>
+        <div class="search-box">
+          <input id="reportSearch" type="search" placeholder="Buscar no relatorio" />
+        </div>
+        <select id="branchFilter" class="select-filter" aria-label="Filial">
+          <option value="all">Todas as filiais</option>
+        </select>
+        <button class="secondary-button" id="exportCsvButton" type="button" disabled>Exportar CSV</button>
+        <button class="primary-button" id="exportPdfButton" type="button" disabled>Gerar PDF</button>
+      </section>
+
+      <section class="fleet-metrics report-metrics" aria-label="Resumo do relatorio">
+        <article><span>Registros</span><strong id="reportTotal">0</strong></article>
+        <article><span>Abertos / ativos</span><strong id="reportOpen">0</strong></article>
+        <article><span>Criticos</span><strong id="reportCritical">0</strong></article>
+        <article><span>Gargalos</span><strong id="reportBottlenecks">0</strong></article>
+      </section>
+
+      <section class="content-panel dashboard-table-panel">
+        <div class="panel-title">
+          <div>
+            <p class="eyebrow">Resultado</p>
+            <h2 id="reportTitle">Relatorio de frota</h2>
+          </div>
+        </div>
+        <div class="table-wrap is-empty">
+          <table id="reportTable">
+            <thead id="reportHead"></thead>
+            <tbody id="reportBody"></tbody>
+          </table>
+          <div class="empty-state">
+            <strong>Entre para carregar os relatórios</strong>
+            <p>Os dados online serão exibidos após o login.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="./firebase-config.js"></script>
+    <script type="module" src="./relatorios.js?v=dev-relatorios-1"></script>
+  </body>
+</html>
