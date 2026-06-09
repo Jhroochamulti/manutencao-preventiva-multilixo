@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dashboard | Sistema de Manutencao Multilixo</title>
+    <link rel="stylesheet" href="./styles.css?v=dev-dashboard-1" />
+  </head>
+  <body class="app-shell dashboard-page">
+    <header class="app-header">
+      <div class="brand" aria-label="Grupo Multilixo">
+        <img class="brand-logo" src="./assets/logo-multilixo.png" alt="Grupo Multilixo" />
+      </div>
+      <nav class="top-actions" aria-label="Modulos">
+        <a class="secondary-link active-link" href="./dashboard.html">Dashboard</a>
+        <a class="secondary-link" href="./frota.html?v=dev-frota-4">Frota</a>
+        <a class="secondary-link" href="./corretivas.html?v=dev-corretivas-1">Corretivas</a>
+        <a class="secondary-link" href="./index.html?v=54">Preventivas</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="module-hero">
+        <div>
+          <p class="eyebrow">Painel executivo</p>
+          <h1>Dashboard da manutencao</h1>
+          <p>
+            Consolide frota, chamados corretivos, equipamentos parados e gargalos por filial e classe operacional.
+          </p>
+        </div>
+        <div class="dev-status">
+          <strong>Ambiente de desenvolvimento</strong>
+          <span>Visao gerencial conectada ao Firebase, ainda sem publicacao no site oficial.</span>
+        </div>
+      </section>
+
+      <section class="auth-panel" aria-labelledby="authTitle">
+        <div>
+          <p class="eyebrow">Acesso restrito</p>
+          <h2 id="authTitle">Login da aplicacao</h2>
+          <p>Entre para consultar os dados online da frota e manutencao.</p>
+        </div>
+        <form id="loginForm" class="auth-form">
+          <label>
+            E-mail
+            <input id="loginEmail" type="email" autocomplete="email" placeholder="seu@email.com" required />
+          </label>
+          <label>
+            Senha
+            <input id="loginPassword" type="password" autocomplete="current-password" required />
+          </label>
+          <button class="primary-button" type="submit">Entrar</button>
+          <button class="secondary-button" id="logoutButton" type="button" hidden>Sair</button>
+        </form>
+        <div class="auth-status" id="authStatus">Aguardando login.</div>
+      </section>
+
+      <section class="dashboard-filters">
+        <div class="search-box">
+          <input id="dashboardSearch" type="search" placeholder="Buscar por filial, equipamento, placa ou classe operacional" />
+        </div>
+        <select id="branchFilter" class="select-filter" aria-label="Filial">
+          <option value="all">Todas as filiais</option>
+        </select>
+        <select id="categoryFilter" class="select-filter" aria-label="Categoria">
+          <option value="all">Todas categorias</option>
+          <option value="caminhao">Caminhoes</option>
+          <option value="maquina">Maquinas</option>
+          <option value="utilitario">Utilitarios</option>
+          <option value="gerador">Geradores</option>
+          <option value="outro">Outros</option>
+        </select>
+      </section>
+
+      <section class="fleet-metrics dashboard-kpis" aria-label="Indicadores gerais">
+        <article>
+          <span>Frota ativa</span>
+          <strong id="fleetTotal">0</strong>
+        </article>
+        <article>
+          <span>Chamados abertos</span>
+          <strong id="openCorrectives">0</strong>
+        </article>
+        <article>
+          <span>Equipamentos parados</span>
+          <strong id="stoppedAssets">0</strong>
+        </article>
+        <article>
+          <span>SLA medio corretivas</span>
+          <strong id="averageSla">0h</strong>
+        </article>
+      </section>
+
+      <section class="analysis-grid dashboard-analysis">
+        <article class="analysis-card">
+          <div class="panel-title">
+            <div>
+              <p class="eyebrow">Frota por filial</p>
+              <h2>Maiores bases operacionais</h2>
+            </div>
+          </div>
+          <div id="branchRanking" class="ranking-list"></div>
+        </article>
+
+        <article class="analysis-card">
+          <div class="panel-title">
+            <div>
+              <p class="eyebrow">Classe operacional</p>
+              <h2>Distribuicao por operacao</h2>
+            </div>
+          </div>
+          <div id="operationRanking" class="ranking-list"></div>
+        </article>
+
+        <article class="analysis-card">
+          <div class="panel-title">
+            <div>
+              <p class="eyebrow">Corretivas</p>
+              <h2>Gargalos por prioridade</h2>
+            </div>
+          </div>
+          <div id="priorityRanking" class="ranking-list"></div>
+        </article>
+
+        <article class="analysis-card">
+          <div class="panel-title">
+            <div>
+              <p class="eyebrow">Paradas</p>
+              <h2>Equipamentos parados</h2>
+            </div>
+          </div>
+          <div id="stoppedList" class="ranking-list"></div>
+        </article>
+      </section>
+
+      <section class="content-panel dashboard-table-panel">
+        <div class="panel-title">
+          <div>
+            <p class="eyebrow">Visao consolidada</p>
+            <h2>Frota com chamados abertos</h2>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Equipamento</th>
+                <th>Filial</th>
+                <th>Classe operacional</th>
+                <th>Corretivas abertas</th>
+                <th>Prioridade maxima</th>
+                <th>SLA maior</th>
+                <th>Parado</th>
+              </tr>
+            </thead>
+            <tbody id="assetRiskTable"></tbody>
+          </table>
+          <div class="empty-state">
+            <strong>Nenhum risco operacional filtrado</strong>
+            <p>A frota filtrada nao possui corretivas abertas.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="./firebase-config.js"></script>
+    <script type="module" src="./dashboard.js?v=dev-dashboard-1"></script>
+  </body>
+</html>
