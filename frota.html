@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Frota | Sistema de Manutencao Multilixo</title>
-    <link rel="stylesheet" href="./styles.css?v=dev-frota-2" />
+    <link rel="stylesheet" href="./styles.css?v=dev-frota-3" />
   </head>
   <body class="app-shell fleet-page">
     <header class="app-header">
@@ -32,6 +32,27 @@
           <strong>Ambiente de desenvolvimento</strong>
           <span>Nada desta pagina foi publicado na versao principal sem aprovacao.</span>
         </div>
+      </section>
+
+      <section class="auth-panel" aria-labelledby="authTitle">
+        <div>
+          <p class="eyebrow">Acesso restrito</p>
+          <h2 id="authTitle">Login da aplicacao</h2>
+          <p>Entre com o usuario criado no Firebase para carregar e sincronizar a frota online.</p>
+        </div>
+        <form id="loginForm" class="auth-form">
+          <label>
+            E-mail
+            <input id="loginEmail" type="email" autocomplete="email" placeholder="seu@email.com" required />
+          </label>
+          <label>
+            Senha
+            <input id="loginPassword" type="password" autocomplete="current-password" required />
+          </label>
+          <button class="primary-button" type="submit">Entrar</button>
+          <button class="secondary-button" id="logoutButton" type="button" hidden>Sair</button>
+        </form>
+        <div class="auth-status" id="authStatus">Aguardando login.</div>
       </section>
 
       <section class="fleet-metrics" aria-label="Indicadores da frota">
@@ -151,6 +172,7 @@
     </template>
 
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <script src="./frota.js?v=dev-frota-2"></script>
+    <script src="./firebase-config.js"></script>
+    <script type="module" src="./frota.js?v=dev-frota-3"></script>
   </body>
 </html>

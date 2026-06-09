@@ -245,6 +245,7 @@ main {
 
 .dev-status,
 .import-panel,
+.auth-panel,
 .fleet-list-panel {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -303,9 +304,72 @@ main {
 }
 
 .import-panel,
+.auth-panel,
 .fleet-list-panel {
   margin: 0 clamp(16px, 4vw, 48px) 22px;
   padding: 20px;
+}
+
+.auth-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(320px, 1fr) minmax(220px, 0.5fr);
+  gap: 16px;
+  align-items: end;
+  border-top: 4px solid var(--purple);
+}
+
+.auth-panel h2 {
+  margin: 0;
+  color: var(--purple);
+}
+
+.auth-panel p:not(.eyebrow) {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.auth-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr) auto auto;
+  gap: 10px;
+  align-items: end;
+}
+
+.auth-form label {
+  display: grid;
+  gap: 6px;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.auth-form input {
+  min-height: 42px;
+  width: 100%;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  background: var(--white);
+}
+
+.auth-form.signed input {
+  background: #f4f5f7;
+}
+
+.auth-status {
+  min-height: 42px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(191, 221, 37, 0.14);
+  color: var(--green-dark);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.auth-status[data-state="warning"] {
+  background: rgba(241, 130, 37, 0.14);
+  color: #9a4a06;
 }
 
 .import-grid {
@@ -392,6 +456,8 @@ main {
 
 @media (max-width: 980px) {
   .module-hero,
+  .auth-panel,
+  .auth-form,
   .import-grid {
     grid-template-columns: 1fr;
   }

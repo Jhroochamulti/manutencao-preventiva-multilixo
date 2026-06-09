@@ -132,3 +132,21 @@ Perfis previstos:
 - Apenas perfis operacionais podem criar/editar registros.
 - Apenas `admin` pode importar frota e gerenciar usuarios.
 - `diretoria` deve ter acesso de leitura a dashboards e relatorios.
+
+## Regras temporarias para desenvolvimento
+
+Use estas regras apenas enquanto estivermos montando e validando a aplicacao. Elas exigem login para ler e gravar.
+
+```javascript
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+```
+
+Depois da validacao inicial, trocar por regras com perfil por usuario.

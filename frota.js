@@ -1,10 +1,32 @@
 const FLEET_STORAGE_KEY = "multilixo-fleet-dev";
+const FLEET_COLLECTION = "fleet";
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import {
+  collection,
+  doc,
+  getDocs,
+  getFirestore,
+  serverTimestamp,
+  writeBatch
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 let fleetRecords = loadFleet();
 let importPreview = null;
 let searchTerm = "";
 let categoryFilter = "all";
 let statusFilter = "active";
+let firebaseReady = false;
+let currentUser = null;
+let app = null;
+let auth = null;
+let db = null;
 
 const fileInput = document.querySelector("#fleetFileInput");
 const previewButton = document.querySelector("#previewImportButton");
@@ -13,6 +35,13 @@ const syncSummary = document.querySelector("#syncSummary");
 const tableBody = document.querySelector("#fleetTableBody");
 const tableWrap = document.querySelector(".fleet-list-panel .table-wrap");
 const rowTemplate = document.querySelector("#fleetRowTemplate");
+const loginForm = document.querySelector("#loginForm");
+const loginEmail = document.querySelector("#loginEmail");
+const loginPassword = document.querySelector("#loginPassword");
+const logoutButton = document.querySelector("#logoutButton");
+const authStatus = document.querySelector("#authStatus");
+
+initFirebase();
 
 document.querySelector("#fleetSearch").addEventListener("input", (event) => {
   searchTerm = event.target.value.trim().toLowerCase();
@@ -45,15 +74,74 @@ previewButton.addEventListener("click", async () => {
   }
 });
 
-confirmButton.addEventListener("click", () => {
+confirmButton.addEventListener("click", async () => {
   if (!importPreview) return;
 
-  fleetRecords = applyFleetImport(importPreview);
-  persistFleet();
-  importPreview = null;
-  confirmButton.disabled = true;
-  render();
+  try {
+    setAuthStatus("Sincronizando inventario com o Firestore...");
+    fleetRecords = applyFleetImport(importPreview);
+    persistFleet();
+    await saveFleetToFirestore(importPreview);
+    importPreview = null;
+    confirmButton.disabled = true;
+    setAuthStatus(`Frota sincronizada. ${fleetRecords.length} ativo(s) na base.`);
+    render();
+  } catch (error) {
+    alert(`Nao foi possivel sincronizar a frota: ${error.message}`);
+    setAuthStatus("Falha na sincronizacao. Verifique permissao e regras do Firestore.", "warning");
+  }
 });
+
+loginForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!auth) {
+    alert("Firebase ainda nao foi inicializado.");
+    return;
+  }
+
+  try {
+    setAuthStatus("Entrando...");
+    await signInWithEmailAndPassword(auth, loginEmail.value.trim(), loginPassword.value);
+    loginPassword.value = "";
+  } catch (error) {
+    alert(`Nao foi possivel entrar: ${friendlyAuthError(error)}`);
+    setAuthStatus("Login nao realizado.", "warning");
+  }
+});
+
+logoutButton.addEventListener("click", async () => {
+  if (!auth) return;
+  await signOut(auth);
+});
+
+function initFirebase() {
+  const config = window.MULTILIXO_FIREBASE_CONFIG;
+
+  if (!config || !config.projectId) {
+    setAuthStatus("Firebase nao configurado. Usando apenas armazenamento local.", "warning");
+    updateAuthUi();
+    return;
+  }
+
+  app = initializeApp(config);
+  auth = getAuth(app);
+  db = getFirestore(app);
+  firebaseReady = true;
+
+  onAuthStateChanged(auth, async (user) => {
+    currentUser = user;
+    updateAuthUi();
+
+    if (user) {
+      setAuthStatus(`Conectado como ${user.email}. Carregando frota online...`);
+      await loadFleetFromFirestore();
+    } else {
+      fleetRecords = loadFleet();
+      setAuthStatus("Aguardando login.");
+      render();
+    }
+  });
+}
 
 function loadFleet() {
   try {
@@ -67,6 +155,67 @@ function loadFleet() {
 
 function persistFleet() {
   localStorage.setItem(FLEET_STORAGE_KEY, JSON.stringify(fleetRecords));
+}
+
+async function loadFleetFromFirestore() {
+  if (!db || !currentUser) return;
+
+  try {
+    const snapshot = await getDocs(collection(db, FLEET_COLLECTION));
+    fleetRecords = snapshot.docs.map((item) => normalizeFirestoreRecord(item.id, item.data()));
+    persistFleet();
+    setAuthStatus(`Frota online carregada: ${fleetRecords.length} ativo(s) registrados.`);
+    render();
+  } catch (error) {
+    console.warn("Falha ao carregar frota online.", error);
+    setAuthStatus("Nao foi possivel carregar o Firestore. Usando copia local.", "warning");
+    render();
+  }
+}
+
+async function saveFleetToFirestore(preview) {
+  if (!firebaseReady || !db || !currentUser) {
+    throw new Error("Entre com seu usuario antes de sincronizar a frota.");
+  }
+
+  const recordsToWrite = [
+    ...preview.created,
+    ...preview.changed.map((item) => item.after),
+    ...preview.same,
+    ...preview.inactive
+  ];
+
+  for (let index = 0; index < recordsToWrite.length; index += 450) {
+    const batch = writeBatch(db);
+    recordsToWrite.slice(index, index + 450).forEach((record) => {
+      const ref = doc(db, FLEET_COLLECTION, record.id);
+      batch.set(ref, {
+        ...record,
+        importedAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        updatedBy: currentUser.email
+      }, { merge: true });
+    });
+    await batch.commit();
+  }
+}
+
+function normalizeFirestoreRecord(id, data) {
+  return {
+    id,
+    mechanicalClass: data.mechanicalClass || "",
+    equipment: data.equipment || id,
+    plate: data.plate || "",
+    yearModel: data.yearModel || "",
+    operationalClass: data.operationalClass || "",
+    manufacturer: data.manufacturer || "",
+    model: data.model || "",
+    branch: data.branch || "",
+    category: data.category || categorize(data.mechanicalClass || ""),
+    active: data.active !== false,
+    source: data.source || "firestore",
+    updatedAt: data.updatedAt || ""
+  };
 }
 
 async function readInventoryFile(file) {
@@ -261,7 +410,7 @@ function renderImportPreview(preview) {
   document.querySelector("#changedCount").textContent = preview.changed.length;
   document.querySelector("#inactiveCount").textContent = preview.inactive.length;
   document.querySelector("#sameCount").textContent = preview.same.length;
-  confirmButton.disabled = false;
+  confirmButton.disabled = !currentUser;
 }
 
 function filteredFleet() {
@@ -366,5 +515,29 @@ window.MULTILIXO_FLEET_DEV = {
     render();
   }
 };
+
+function updateAuthUi() {
+  const signed = Boolean(currentUser);
+  logoutButton.hidden = !signed;
+  loginForm.classList.toggle("signed", signed);
+  loginEmail.disabled = signed;
+  loginPassword.disabled = signed;
+  previewButton.disabled = !signed;
+  confirmButton.disabled = !signed || !importPreview;
+}
+
+function setAuthStatus(text, state = "") {
+  authStatus.textContent = text;
+  authStatus.dataset.state = state;
+}
+
+function friendlyAuthError(error) {
+  const code = error && error.code ? error.code : "";
+  if (code.includes("invalid-credential")) return "e-mail ou senha invalidos.";
+  if (code.includes("user-not-found")) return "usuario nao encontrado.";
+  if (code.includes("wrong-password")) return "senha invalida.";
+  if (code.includes("too-many-requests")) return "muitas tentativas. Aguarde e tente novamente.";
+  return error.message || "erro desconhecido.";
+}
 
 render();
