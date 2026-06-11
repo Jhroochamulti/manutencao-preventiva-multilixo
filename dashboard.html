@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Dashboard | Sistema de Manutencao Multilixo</title>
+    <title>Dashboard | Sistema de Manutenção Multilixo</title>
     <link rel="stylesheet" href="./styles.css?v=dev-dashboard-1" />
   </head>
   <body class="app-shell dashboard-page">
@@ -12,22 +12,22 @@
         <img class="brand-logo" src="./assets/logo-multilixo.png" alt="Grupo Multilixo" />
       </div>
       <nav class="top-actions" aria-label="Modulos">
-        <a class="secondary-link" href="./portal.html?v=dev-portal-1">Inicio</a>
+        <a class="secondary-link" href="./portal.html?v=dev-portal-1">Início</a>
         <a class="secondary-link" href="./acesso.html?v=dev-acesso-1">Acesso</a>
-        <div class="nav-group" aria-label="Operacao">
-          <span class="nav-label">Operacao</span>
+        <div class="nav-group" aria-label="Manutenção">
+          <span class="nav-label">Manutenção</span>
           <a class="secondary-link" href="./index.html?v=54">Preventivas</a>
           <a class="secondary-link" href="./frota.html?v=dev-frota-4">Frota</a>
           <a class="secondary-link" href="./corretivas.html?v=dev-corretivas-1">Corretivas</a>
           <a class="secondary-link" href="./materiais.html?v=dev-materiais-1">Materiais</a>
-          <a class="secondary-link" href="./usuarios.html?v=dev-usuarios-1">Usuarios</a>
+          <a class="secondary-link" href="./usuarios.html?v=dev-usuarios-1">Usuários</a>
         </div>
-        <div class="nav-group" aria-label="Analises">
-          <span class="nav-label">Analises</span>
+        <div class="nav-group" aria-label="Análises">
+          <span class="nav-label">Análises</span>
           <a class="secondary-link" href="./mtr.html?v=dev-mtr-1">Painel MTR</a>
           <a class="secondary-link active-link" href="./dashboard.html">Dashboard</a>
           <a class="secondary-link" href="./sla.html?v=dev-sla-1">SLA</a>
-          <a class="secondary-link" href="./relatorios.html?v=dev-relatorios-1">Relatorios</a>
+          <a class="secondary-link" href="./relatorios.html?v=dev-relatorios-1">Relatórios</a>
         </div>
       </nav>
     </header>
@@ -36,22 +36,22 @@
       <section class="module-hero">
         <div>
           <p class="eyebrow">Painel executivo</p>
-          <h1>Dashboard da manutencao</h1>
+          <h1>Dashboard da manutenção</h1>
           <p>
             Consolide frota, chamados corretivos, equipamentos parados e gargalos por filial e classe operacional.
           </p>
         </div>
         <div class="dev-status">
           <strong>Ambiente de desenvolvimento</strong>
-          <span>Visao gerencial conectada ao Firebase, ainda sem publicacao no site oficial.</span>
+          <span>Visão gerencial conectada ao Firebase, ainda sem publicação no site oficial.</span>
         </div>
       </section>
 
       <section class="auth-panel" aria-labelledby="authTitle">
         <div>
           <p class="eyebrow">Acesso restrito</p>
-          <h2 id="authTitle">Login da aplicacao</h2>
-          <p>Entre para consultar os dados online da frota e manutencao.</p>
+          <h2 id="authTitle">Login da aplicação</h2>
+          <p>Entre para consultar os dados online da frota e da manutenção.</p>
         </div>
         <form id="loginForm" class="auth-form">
           <label>
@@ -77,8 +77,8 @@
         </select>
         <select id="categoryFilter" class="select-filter" aria-label="Categoria">
           <option value="all">Todas categorias</option>
-          <option value="caminhao">Caminhoes</option>
-          <option value="maquina">Maquinas</option>
+          <option value="caminhao">Caminhões</option>
+          <option value="maquina">Máquinas</option>
           <option value="utilitario">Utilitarios</option>
           <option value="gerador">Geradores</option>
           <option value="outro">Outros</option>
@@ -104,7 +104,7 @@
         </article>
       </section>
 
-      <section class="dashboard-chart-grid" aria-label="Analises visuais">
+      <section class="dashboard-chart-grid" aria-label="Análises visuais">
         <article class="chart-card">
           <div class="panel-title">
             <div>
@@ -132,7 +132,7 @@
           <div class="panel-title">
             <div>
               <p class="eyebrow">Filiais</p>
-              <h2>Maior concentracao da frota</h2>
+              <h2>Maior concentração da frota</h2>
             </div>
           </div>
           <div id="branchChart" class="bar-chart-list"></div>
@@ -164,7 +164,7 @@
           <div class="panel-title">
             <div>
               <p class="eyebrow">Classe operacional</p>
-              <h2>Distribuicao por operacao</h2>
+              <h2>Distribuição por classe de manutenção</h2>
             </div>
           </div>
           <div id="operationRanking" class="ranking-list"></div>
@@ -194,7 +194,7 @@
       <section class="content-panel dashboard-table-panel">
         <div class="panel-title">
           <div>
-            <p class="eyebrow">Visao consolidada</p>
+            <p class="eyebrow">Visão consolidada</p>
             <h2>Frota com chamados abertos</h2>
           </div>
         </div>
@@ -214,8 +214,8 @@
             <tbody id="assetRiskTable"></tbody>
           </table>
           <div class="empty-state">
-            <strong>Nenhum risco operacional filtrado</strong>
-            <p>A frota filtrada nao possui corretivas abertas.</p>
+            <strong>Nenhum risco de manutenção filtrado</strong>
+            <p>A frota filtrada não possui corretivas abertas.</p>
           </div>
         </div>
       </section>

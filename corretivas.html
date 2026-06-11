@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Corretivas | Sistema de Manutencao Multilixo</title>
+    <title>Corretivas | Sistema de Manutenção Multilixo</title>
     <link rel="stylesheet" href="./styles.css?v=dev-corretivas-1" />
   </head>
   <body class="app-shell corrective-page">
@@ -12,22 +12,22 @@
         <img class="brand-logo" src="./assets/logo-multilixo.png" alt="Grupo Multilixo" />
       </div>
       <nav class="top-actions" aria-label="Modulos">
-        <a class="secondary-link" href="./portal.html?v=dev-portal-1">Inicio</a>
+        <a class="secondary-link" href="./portal.html?v=dev-portal-1">Início</a>
         <a class="secondary-link" href="./acesso.html?v=dev-acesso-1">Acesso</a>
-        <div class="nav-group" aria-label="Operacao">
-          <span class="nav-label">Operacao</span>
+        <div class="nav-group" aria-label="Manutenção">
+          <span class="nav-label">Manutenção</span>
           <a class="secondary-link" href="./index.html?v=54">Preventivas</a>
           <a class="secondary-link" href="./frota.html?v=dev-frota-4">Frota</a>
           <a class="secondary-link active-link" href="./corretivas.html">Corretivas</a>
           <a class="secondary-link" href="./materiais.html?v=dev-materiais-1">Materiais</a>
-          <a class="secondary-link" href="./usuarios.html?v=dev-usuarios-1">Usuarios</a>
+          <a class="secondary-link" href="./usuarios.html?v=dev-usuarios-1">Usuários</a>
         </div>
-        <div class="nav-group" aria-label="Analises">
-          <span class="nav-label">Analises</span>
+        <div class="nav-group" aria-label="Análises">
+          <span class="nav-label">Análises</span>
           <a class="secondary-link" href="./mtr.html?v=dev-mtr-1">Painel MTR</a>
           <a class="secondary-link" href="./dashboard.html">Dashboard</a>
           <a class="secondary-link" href="./sla.html?v=dev-sla-1">SLA</a>
-          <a class="secondary-link" href="./relatorios.html?v=dev-relatorios-1">Relatorios</a>
+          <a class="secondary-link" href="./relatorios.html?v=dev-relatorios-1">Relatórios</a>
         </div>
       </nav>
     </header>
@@ -35,7 +35,7 @@
     <main>
       <section class="module-hero">
         <div>
-          <p class="eyebrow">Manutencao corretiva</p>
+          <p class="eyebrow">Manutenção corretiva</p>
           <h1>Chamados corretivos</h1>
           <p>
             Registre falhas da frota, acompanhe prioridades, equipamentos parados e tempo de atendimento.
@@ -43,14 +43,14 @@
         </div>
         <div class="dev-status">
           <strong>Ambiente de desenvolvimento</strong>
-          <span>Modulo conectado ao Firebase e mantido fora da versao publicada ate sua aprovacao.</span>
+          <span>Módulo conectado ao Firebase e mantido fora da versão publicada até sua aprovação.</span>
         </div>
       </section>
 
       <section class="auth-panel" aria-labelledby="authTitle">
         <div>
           <p class="eyebrow">Acesso restrito</p>
-          <h2 id="authTitle">Login da aplicacao</h2>
+          <h2 id="authTitle">Login da aplicação</h2>
           <p>Entre para abrir, editar e consultar chamados corretivos.</p>
         </div>
         <form id="loginForm" class="auth-form">
@@ -78,11 +78,11 @@
           <strong id="stoppedCount">0</strong>
         </article>
         <article>
-          <span>Alta/Critica</span>
+          <span>Alta/Crítica</span>
           <strong id="criticalCount">0</strong>
         </article>
         <article>
-          <span>SLA medio</span>
+          <span>SLA médio</span>
           <strong id="averageSla">0h</strong>
         </article>
       </section>
@@ -142,9 +142,9 @@
                 Prioridade
                 <select id="priority" required>
                   <option value="Baixa">Baixa</option>
-                  <option value="Media" selected>Media</option>
+                  <option value="Media" selected>Média</option>
                   <option value="Alta">Alta</option>
-                  <option value="Critica">Critica</option>
+                  <option value="Critica">Crítica</option>
                 </select>
               </label>
               <label>
@@ -152,7 +152,7 @@
                 <select id="status" required>
                   <option value="Aberto">Aberto</option>
                   <option value="Em atendimento">Em atendimento</option>
-                  <option value="Aguardando peca">Aguardando peca</option>
+                  <option value="Aguardando peca">Aguardando peça</option>
                   <option value="Concluido">Concluido</option>
                   <option value="Cancelado">Cancelado</option>
                 </select>
@@ -170,11 +170,11 @@
                 <input id="openedAt" type="datetime-local" required />
               </label>
               <label>
-                Inicio atendimento
+                Início do atendimento
                 <input id="startedAt" type="datetime-local" />
               </label>
               <label>
-                Conclusao
+                Conclusão
                 <input id="finishedAt" type="datetime-local" />
               </label>
             </div>
@@ -190,8 +190,8 @@
             </label>
 
             <label>
-              Observacoes
-              <textarea id="notes" rows="3" placeholder="Peca pendente, causa, acao tomada..."></textarea>
+              Observações
+              <textarea id="notes" rows="3" placeholder="Peça pendente, causa, ação tomada..."></textarea>
             </label>
 
             <div class="form-actions">
@@ -214,9 +214,9 @@
             </select>
             <select id="correctivePriorityFilter" class="select-filter" aria-label="Prioridade">
               <option value="all">Todas prioridades</option>
-              <option value="Critica">Critica</option>
+              <option value="Critica">Crítica</option>
               <option value="Alta">Alta</option>
-              <option value="Media">Media</option>
+              <option value="Media">Média</option>
               <option value="Baixa">Baixa</option>
             </select>
           </div>
@@ -232,14 +232,14 @@
                   <th>Aberto em</th>
                   <th>SLA</th>
                   <th>Parado</th>
-                  <th>Acoes</th>
+                  <th>Ações</th>
                 </tr>
               </thead>
               <tbody id="correctiveTableBody"></tbody>
             </table>
             <div class="empty-state" id="correctiveEmptyState">
               <strong>Nenhuma corretiva cadastrada</strong>
-              <p>Abra o primeiro chamado para acompanhar a manutencao corretiva.</p>
+              <p>Abra o primeiro chamado para acompanhar a manutenção corretiva.</p>
             </div>
           </div>
         </section>
@@ -255,7 +255,7 @@
         <td data-label="Aberto em"></td>
         <td data-label="SLA"></td>
         <td data-label="Parado"></td>
-        <td data-label="Acoes"></td>
+        <td data-label="Ações"></td>
       </tr>
     </template>
 

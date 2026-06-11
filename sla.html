@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>SLA | Sistema de Manutencao Multilixo</title>
+    <title>SLA | Sistema de Manutenção Multilixo</title>
     <link rel="stylesheet" href="./styles.css?v=dev-sla-1" />
   </head>
   <body class="app-shell sla-page">
@@ -12,22 +12,22 @@
         <img class="brand-logo" src="./assets/logo-multilixo.png" alt="Grupo Multilixo" />
       </div>
       <nav class="top-actions" aria-label="Modulos">
-        <a class="secondary-link" href="./portal.html?v=dev-portal-1">Inicio</a>
+        <a class="secondary-link" href="./portal.html?v=dev-portal-1">Início</a>
         <a class="secondary-link" href="./acesso.html?v=dev-acesso-1">Acesso</a>
-        <div class="nav-group" aria-label="Operacao">
-          <span class="nav-label">Operacao</span>
+        <div class="nav-group" aria-label="Manutenção">
+          <span class="nav-label">Manutenção</span>
           <a class="secondary-link" href="./index.html?v=54">Preventivas</a>
           <a class="secondary-link" href="./frota.html?v=dev-frota-4">Frota</a>
           <a class="secondary-link" href="./corretivas.html?v=dev-corretivas-1">Corretivas</a>
           <a class="secondary-link" href="./materiais.html?v=dev-materiais-1">Materiais</a>
-          <a class="secondary-link" href="./usuarios.html?v=dev-usuarios-1">Usuarios</a>
+          <a class="secondary-link" href="./usuarios.html?v=dev-usuarios-1">Usuários</a>
         </div>
-        <div class="nav-group" aria-label="Analises">
-          <span class="nav-label">Analises</span>
+        <div class="nav-group" aria-label="Análises">
+          <span class="nav-label">Análises</span>
           <a class="secondary-link" href="./mtr.html?v=dev-mtr-1">Painel MTR</a>
           <a class="secondary-link" href="./dashboard.html?v=dev-dashboard-1">Dashboard</a>
           <a class="secondary-link active-link" href="./sla.html">SLA</a>
-          <a class="secondary-link" href="./relatorios.html?v=dev-relatorios-1">Relatorios</a>
+          <a class="secondary-link" href="./relatorios.html?v=dev-relatorios-1">Relatórios</a>
         </div>
       </nav>
     </header>
@@ -35,8 +35,8 @@
     <main>
       <section class="module-hero">
         <div>
-          <p class="eyebrow">Gestao de gargalos</p>
-          <h1>SLA da manutencao</h1>
+          <p class="eyebrow">Gestão de gargalos</p>
+          <h1>SLA da manutenção</h1>
           <p>
             Acompanhe prazos de corretivas e materiais, identifique itens fora da meta e priorize gargalos operacionais.
           </p>
@@ -50,7 +50,7 @@
       <section class="auth-panel" aria-labelledby="authTitle">
         <div>
           <p class="eyebrow">Acesso restrito</p>
-          <h2 id="authTitle">Login da aplicacao</h2>
+          <h2 id="authTitle">Login da aplicação</h2>
           <p>Entre para consultar o painel de SLA com os dados online.</p>
         </div>
         <form id="loginForm" class="auth-form">
@@ -80,7 +80,7 @@
         <select id="slaFilter" class="select-filter" aria-label="SLA">
           <option value="all">Todos os SLAs</option>
           <option value="bottleneck">Fora da meta</option>
-          <option value="attention">Atencao</option>
+          <option value="attention">Atenção</option>
           <option value="ok">Dentro da meta</option>
         </select>
       </section>
@@ -95,7 +95,7 @@
           <strong id="okItems">0</strong>
         </article>
         <article>
-          <span>Atencao</span>
+          <span>Atenção</span>
           <strong id="attentionItems">0</strong>
         </article>
         <article>
@@ -129,7 +129,7 @@
       <section class="content-panel dashboard-table-panel">
         <div class="panel-title">
           <div>
-            <p class="eyebrow">Fila operacional</p>
+            <p class="eyebrow">Fila da manutenção</p>
             <h2>Itens monitorados por SLA</h2>
           </div>
         </div>

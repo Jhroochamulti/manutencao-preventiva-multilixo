@@ -35,8 +35,8 @@ function bindEvents() {
       await signInWithEmailAndPassword(auth, loginEmail.value.trim(), loginPassword.value);
       loginPassword.value = "";
     } catch (error) {
-      alert(`Nao foi possivel entrar: ${friendlyAuthError(error)}`);
-      setAuthStatus("Login nao realizado.", "warning");
+      alert(`Não foi possível entrar: ${friendlyAuthError(error)}`);
+      setAuthStatus("Login não realizado.", "warning");
     }
   });
 
@@ -68,7 +68,7 @@ function bindEvents() {
 function initFirebase() {
   const config = window.MULTILIXO_FIREBASE_CONFIG;
   if (!config || !config.projectId) {
-    setAuthStatus("Firebase nao configurado.", "warning");
+    setAuthStatus("Firebase não configurado.", "warning");
     updateAuthUi();
     return;
   }
@@ -82,10 +82,10 @@ function initFirebase() {
     updateAuthUi();
 
     if (user) {
-      setAuthStatus(`Conectado como ${user.email}. Carregando usuarios...`);
+      setAuthStatus(`Conectado como ${user.email}. Carregando usuários...`);
       await loadUsers();
       ensureCurrentUserDraft();
-      if (users.length) setAuthStatus(`Usuarios carregados: ${users.length} perfil(is) cadastrado(s).`);
+      if (users.length) setAuthStatus(`Usuários carregados: ${users.length} perfil(is) cadastrado(s).`);
     } else {
       users = [];
       setAuthStatus("Aguardando login.");
@@ -111,7 +111,7 @@ function ensureCurrentUserDraft() {
   document.querySelector("#userRole").value = "admin";
   document.querySelector("#userActiveSelect").value = "true";
   document.querySelector("#userBranches").value = "Todas";
-  setAuthStatus("Nenhum perfil encontrado. Salve seu usuario como administrador inicial.");
+  setAuthStatus("Nenhum perfil encontrado. Salve seu usuário como administrador inicial.");
 }
 
 async function saveUserProfile() {
@@ -132,7 +132,7 @@ async function saveUserProfile() {
   };
 
   if (!record.name || !record.email) {
-    alert("Informe nome e e-mail do usuario.");
+    alert("Informe nome e e-mail do usuário.");
     return;
   }
 
@@ -151,7 +151,7 @@ async function saveUserProfile() {
 async function removeUser(id) {
   const user = users.find((item) => item.id === id);
   if (!user) return;
-  const confirmed = confirm(`Excluir o perfil de ${user.name || user.email}? A conta no Firebase Authentication nao sera removida.`);
+  const confirmed = confirm(`Excluir o perfil de ${user.name || user.email}? A conta no Firebase Authentication não será removida.`);
   if (!confirmed) return;
 
   await deleteDoc(doc(db, USERS_COLLECTION, id));
@@ -215,7 +215,7 @@ function renderTable(rows) {
 
   const emptyTitle = tableWrap.querySelector(".empty-state strong");
   const emptyText = tableWrap.querySelector(".empty-state p");
-  emptyTitle.textContent = currentUser ? "Nenhum usuario encontrado" : "Entre para carregar os usuarios";
+  emptyTitle.textContent = currentUser ? "Nenhum usuário encontrado" : "Entre para carregar os usuários";
   emptyText.textContent = currentUser ? "Ajuste os filtros ou cadastre um novo perfil de acesso." : "Os perfis de acesso serao exibidos apos o login.";
 
   rows.forEach((user) => {
@@ -272,10 +272,10 @@ function roleLabel(role) {
     admin: "Administrador",
     planejamento: "Planejamento",
     almoxarifado: "Almoxarifado",
-    manutencao: "Manutencao",
+    manutencao: "Manutenção",
     diretoria: "Diretoria"
   };
-  return labels[role] || "Manutencao";
+  return labels[role] || "Manutenção";
 }
 
 function roleClass(role) {
@@ -302,7 +302,7 @@ function setAuthStatus(text, state = "") {
 function friendlyAuthError(error) {
   const code = error && error.code ? error.code : "";
   if (code.includes("invalid-credential")) return "e-mail ou senha invalidos.";
-  if (code.includes("user-not-found")) return "usuario nao encontrado.";
+  if (code.includes("user-not-found")) return "usuário não encontrado.";
   if (code.includes("wrong-password")) return "senha invalida.";
   if (code.includes("too-many-requests")) return "muitas tentativas. Aguarde e tente novamente.";
   return error.message || "erro desconhecido.";

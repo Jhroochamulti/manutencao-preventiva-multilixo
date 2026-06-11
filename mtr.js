@@ -2,6 +2,8 @@ const FLEET_COLLECTION = "fleet";
 const CORRECTIVE_COLLECTION = "correctives";
 const MATERIAL_COLLECTION = "materials";
 const PREVENTIVE_COLLECTION = "preventives";
+const FLEET_STORAGE_KEY = "multilixo-fleet-dev";
+const PREVENTIVE_STORAGE_KEY = "multilixo-preventivas";
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
@@ -38,8 +40,8 @@ function bindEvents() {
       await signInWithEmailAndPassword(auth, loginEmail.value.trim(), loginPassword.value);
       loginPassword.value = "";
     } catch (error) {
-      alert(`Nao foi possivel entrar: ${friendlyAuthError(error)}`);
-      setAuthStatus("Login nao realizado.", "warning");
+      alert(`Não foi possível entrar: ${friendlyAuthError(error)}`);
+      setAuthStatus("Login não realizado.", "warning");
     }
   });
 
@@ -67,7 +69,7 @@ function bindEvents() {
 function initFirebase() {
   const config = window.MULTILIXO_FIREBASE_CONFIG;
   if (!config || !config.projectId) {
-    setAuthStatus("Firebase nao configurado.", "warning");
+    setAuthStatus("Firebase não configurado.", "warning");
     updateAuthUi();
     return;
   }
@@ -85,11 +87,12 @@ function initFirebase() {
       await loadData();
       setAuthStatus(`Painel MTR carregado: ${fleet.length} ativos, ${correctives.length} corretiva(s), ${materials.length} material(is).`);
     } else {
-      fleet = [];
+      fleet = loadLocalFleet();
       correctives = [];
       materials = [];
-      preventives = [];
-      setAuthStatus("Aguardando login.");
+      preventives = loadLocalPreventives();
+      syncBranchFilter();
+      setAuthStatus("Aguardando login. Exibindo dados locais quando disponíveis.");
       render();
     }
   });
@@ -103,10 +106,12 @@ async function loadData() {
     getDocs(collection(db, PREVENTIVE_COLLECTION)).catch(() => ({ docs: [] }))
   ]);
 
-  fleet = fleetSnapshot.docs.map((item) => ({ id: item.id, ...item.data() })).filter((record) => record.active !== false);
+  const firestoreFleet = fleetSnapshot.docs.map((item) => ({ id: item.id, ...item.data() })).filter((record) => record.active !== false);
+  const firestorePreventives = preventiveSnapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
+  fleet = mergeById(loadLocalFleet(), firestoreFleet).filter((record) => record.active !== false);
   correctives = correctiveSnapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
   materials = materialSnapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
-  preventives = preventiveSnapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
+  preventives = mergeById(loadLocalPreventives(), firestorePreventives);
   syncBranchFilter();
   render();
 }
@@ -124,9 +129,17 @@ function render() {
   const visibleFleet = filteredFleet();
   const fleetIds = new Set(visibleFleet.map((record) => record.id));
   const fleetById = new Map(visibleFleet.map((record) => [record.id, record]));
-  const visibleCorrectives = correctives.filter((record) => !isClosed(record.status) && fleetIds.has(record.fleetId));
-  const visibleMaterials = materials.filter((record) => !["Retirado", "Cancelado"].includes(record.status || "") && (!record.fleetId || fleetIds.has(record.fleetId)));
-  const visiblePreventives = preventives.filter((record) => !["Concluido", "Cancelado"].includes(record.status || "") && (!record.fleetId || fleetIds.has(record.fleetId)));
+  const visibleCorrectives = correctives.filter((record) => !isClosed(record.status) && record.isStopped && fleetIds.has(record.fleetId));
+  const awaitingPartsFleetIds = new Set(visibleCorrectives.filter((record) => isAwaitingParts(record.status)).map((record) => record.fleetId));
+  const visibleMaterials = materials.filter((record) =>
+    !["Retirado", "Cancelado"].includes(record.status || "") &&
+    fleetIds.has(record.fleetId) &&
+    (
+      isPreventiveMaterial(record) ||
+      (isCorrectiveMaterial(record) && awaitingPartsFleetIds.has(record.fleetId))
+    )
+  );
+  const visiblePreventives = preventives.filter((record) => !["Concluido", "Cancelado"].includes(record.status || "") && fleetIds.has(record.fleetId));
   const slaLate = monitoredLate(visibleCorrectives, visibleMaterials);
   const monitored = visibleCorrectives.length + visibleMaterials.length;
 
@@ -160,7 +173,7 @@ function renderStatusLine(selector, records) {
   const container = document.querySelector(selector);
   const total = records.length;
   if (!total) {
-    container.innerHTML = `<span class="ok" style="width:100%">Sem retencoes no filtro</span>`;
+    container.innerHTML = `<span class="ok" style="width:100%">Sem retenções no filtro</span>`;
     return;
   }
 
@@ -174,7 +187,7 @@ function renderStatusLine(selector, records) {
 
   const items = [
     ["ok", "Dentro", counts.ok],
-    ["attention", "Atencao", counts.attention],
+    ["attention", "Atenção", counts.attention],
     ["late", "Gargalo", counts.late]
   ];
 
@@ -191,7 +204,7 @@ function renderKpis(visibleFleet, visibleCorrectives, visibleMaterials, visibleP
   const pendingPreventives = visiblePreventives.filter((record) => !record.executionDate && !record.executedAt).length;
 
   document.querySelector("#kpiFleet").textContent = visibleFleet.length;
-  document.querySelector("#kpiFleetMix").textContent = `${counts.caminhao || 0} caminhoes | ${counts.maquina || 0} maquinas`;
+  document.querySelector("#kpiFleetMix").textContent = `${counts.caminhao || 0} caminhões | ${counts.maquina || 0} máquinas`;
   document.querySelector("#kpiCorrectives").textContent = visibleCorrectives.length;
   document.querySelector("#kpiStopped").textContent = `${stopped} equipamento(s) parado(s)`;
   document.querySelector("#kpiMaterials").textContent = visibleMaterials.length;
@@ -205,7 +218,7 @@ function renderKpis(visibleFleet, visibleCorrectives, visibleMaterials, visibleP
 function renderHealthChart(visibleCorrectives, visibleMaterials, late, monitored) {
   const container = document.querySelector("#healthChart");
   if (!monitored) {
-    container.innerHTML = `<p class="empty-inline">Sem itens operacionais monitorados no filtro atual.</p>`;
+    container.innerHTML = `<p class="empty-inline">Sem itens de manutenção monitorados no filtro atual.</p>`;
     return;
   }
 
@@ -217,7 +230,7 @@ function renderHealthChart(visibleCorrectives, visibleMaterials, late, monitored
   const ok = Math.max(0, monitored - late - attention);
   const items = [
     ["ok", "Dentro da meta", ok, "#bfdd25"],
-    ["attention", "Atencao", attention, "#f18225"],
+    ["attention", "Atenção", attention, "#f18225"],
     ["late", "Gargalo", late, "#d92d20"]
   ];
 
@@ -230,7 +243,7 @@ function renderHealthChart(visibleCorrectives, visibleMaterials, late, monitored
 }
 
 function renderFleetDonut(visibleFleet) {
-  const labels = { caminhao: "Caminhoes", maquina: "Maquinas", utilitario: "Utilitarios", gerador: "Geradores", outro: "Outros" };
+  const labels = { caminhao: "Caminhões", maquina: "Máquinas", utilitario: "Utilitários", gerador: "Geradores", outro: "Outros" };
   const colors = { caminhao: "#bfdd25", maquina: "#6e3781", utilitario: "#f18225", gerador: "#2f80ed", outro: "#98a2b3" };
   const donut = document.querySelector("#fleetDonut");
   const legend = document.querySelector("#fleetLegend");
@@ -266,7 +279,7 @@ function renderBranchPressure(visibleFleet, visibleCorrectives, visibleMaterials
   });
   const entries = Object.entries(totals).sort((a, b) => b[1] - a[1]).slice(0, 7);
   if (!entries.length) {
-    container.innerHTML = `<p class="empty-inline">Sem pressao operacional no filtro.</p>`;
+    container.innerHTML = `<p class="empty-inline">Sem pressão de manutenção no filtro.</p>`;
     return;
   }
   const max = Math.max(...entries.map(([, count]) => count), 1);
@@ -355,7 +368,7 @@ function availabilityPercent(fleetCount, retainedCount) {
 
 function countBy(records, field) {
   return records.reduce((acc, record) => {
-    const label = record[field] || "Sem informacao";
+    const label = record[field] || "Sem informação";
     acc[label] = (acc[label] || 0) + 1;
     return acc;
   }, {});
@@ -363,6 +376,18 @@ function countBy(records, field) {
 
 function isClosed(status) {
   return ["Concluido", "Cancelado"].includes(status || "");
+}
+
+function isAwaitingParts(status) {
+  return normalizeFilter(status) === "aguardandopeca";
+}
+
+function isCorrectiveMaterial(record) {
+  return normalizeFilter(record.maintenanceType) === "corretiva";
+}
+
+function isPreventiveMaterial(record) {
+  return normalizeFilter(record.maintenanceType) === "preventiva";
 }
 
 function slaHours(record) {
@@ -429,6 +454,67 @@ function friendlyAuthError(error) {
 
 function normalizeFilter(value) {
   return String(value || "sem-informacao").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function mergeById(primary, secondary) {
+  const merged = new Map();
+  [...primary, ...secondary].forEach((record) => {
+    if (!record) return;
+    const key = record.id || record.fleetId || record.plate || record.fleet || record.equipment;
+    if (!key) return;
+    merged.set(key, { ...(merged.get(key) || {}), ...record });
+  });
+  return Array.from(merged.values());
+}
+
+function loadLocalFleet() {
+  try {
+    const saved = localStorage.getItem(FLEET_STORAGE_KEY);
+    const parsed = saved ? JSON.parse(saved) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    console.warn("Frota local invalida.", error);
+    return [];
+  }
+}
+
+function loadLocalPreventives() {
+  try {
+    const saved = localStorage.getItem(PREVENTIVE_STORAGE_KEY);
+    const parsed = saved ? JSON.parse(saved) : [];
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed
+      .filter((record) => record.fleetId && !String(record.id || "").startsWith("mlx-default-"))
+      .map((record) => ({
+        id: record.id || "",
+        fleetId: record.fleetId || "",
+        equipment: record.machine || record.equipment || "",
+        machine: record.machine || record.equipment || "",
+        plate: record.plate || record.fleet || "",
+        fleet: record.fleet || record.plate || "",
+        branch: record.branch || "",
+        model: record.model || "",
+        yearModel: record.yearModel || record.year || "",
+        serviceType: record.serviceType || "",
+        status: record.status || preventiveStatus(record),
+        requestDate: record.requestDate || "",
+        availableDate: record.availableDate || "",
+        pickupDate: record.pickupDate || "",
+        executionDate: record.executionDate || "",
+        notes: record.notes || ""
+      }));
+  } catch (error) {
+    console.warn("Preventivas locais invalidas.", error);
+    return [];
+  }
+}
+
+function preventiveStatus(record) {
+  if (record.executionDate || record.executedAt) return "Concluido";
+  if (record.pickupDate) return "Material retirado";
+  if (record.availableDate) return "Disponível para retirada";
+  return "Aguardando material";
 }
 
 function naturalSort(a, b) {

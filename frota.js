@@ -69,7 +69,7 @@ document.querySelector("#fleetStatusFilter").addEventListener("change", (event) 
 previewButton.addEventListener("click", async () => {
   const file = fileInput.files && fileInput.files[0];
   if (!file) {
-    alert("Selecione o arquivo do inventario para analisar.");
+    alert("Selecione o arquivo do inventário para analisar.");
     return;
   }
 
@@ -78,7 +78,7 @@ previewButton.addEventListener("click", async () => {
     importPreview = compareFleet(imported, fleetRecords);
     renderImportPreview(importPreview);
   } catch (error) {
-    alert(`Nao foi possivel ler o arquivo: ${error.message}`);
+    alert(`Não foi possível ler o arquivo: ${error.message}`);
   }
 });
 
@@ -86,7 +86,7 @@ confirmButton.addEventListener("click", async () => {
   if (!importPreview) return;
 
   try {
-    setAuthStatus("Sincronizando inventario com o Firestore...");
+    setAuthStatus("Sincronizando inventário com o Firestore...");
     fleetRecords = applyFleetImport(importPreview);
     persistFleet();
     await saveFleetToFirestore(importPreview);
@@ -95,15 +95,15 @@ confirmButton.addEventListener("click", async () => {
     setAuthStatus(`Frota sincronizada. ${fleetRecords.length} ativo(s) na base.`);
     render();
   } catch (error) {
-    alert(`Nao foi possivel sincronizar a frota: ${error.message}`);
-    setAuthStatus("Falha na sincronizacao. Verifique permissao e regras do Firestore.", "warning");
+    alert(`Não foi possível sincronizar a frota: ${error.message}`);
+    setAuthStatus("Falha na sincronização. Verifique permissão e regras do Firestore.", "warning");
   }
 });
 
 loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (!auth) {
-    alert("Firebase ainda nao foi inicializado.");
+    alert("Firebase ainda não foi inicializado.");
     return;
   }
 
@@ -112,8 +112,8 @@ loginForm.addEventListener("submit", async (event) => {
     await signInWithEmailAndPassword(auth, loginEmail.value.trim(), loginPassword.value);
     loginPassword.value = "";
   } catch (error) {
-    alert(`Nao foi possivel entrar: ${friendlyAuthError(error)}`);
-    setAuthStatus("Login nao realizado.", "warning");
+    alert(`Não foi possível entrar: ${friendlyAuthError(error)}`);
+    setAuthStatus("Login não realizado.", "warning");
   }
 });
 
@@ -126,7 +126,7 @@ function initFirebase() {
   const config = window.MULTILIXO_FIREBASE_CONFIG;
 
   if (!config || !config.projectId) {
-    setAuthStatus("Firebase nao configurado. Usando apenas armazenamento local.", "warning");
+    setAuthStatus("Firebase não configurado. Usando apenas armazenamento local.", "warning");
     updateAuthUi();
     return;
   }
@@ -176,14 +176,14 @@ async function loadFleetFromFirestore() {
     render();
   } catch (error) {
     console.warn("Falha ao carregar frota online.", error);
-    setAuthStatus("Nao foi possivel carregar o Firestore. Usando copia local.", "warning");
+    setAuthStatus("Não foi possível carregar o Firestore. Usando cópia local.", "warning");
     render();
   }
 }
 
 async function saveFleetToFirestore(preview) {
   if (!firebaseReady || !db || !currentUser) {
-    throw new Error("Entre com seu usuario antes de sincronizar a frota.");
+    throw new Error("Entre com seu usuário antes de sincronizar a frota.");
   }
 
   const recordsToWrite = [
@@ -235,7 +235,7 @@ async function readInventoryFile(file) {
   }
 
   if (!window.XLSX) {
-    throw new Error("Biblioteca de Excel nao carregada. Verifique a conexao com a internet.");
+    throw new Error("Biblioteca de Excel não carregada. Verifique a conexão com a internet.");
   }
 
   const buffer = await file.arrayBuffer();
@@ -620,7 +620,7 @@ function setAuthStatus(text, state = "") {
 function friendlyAuthError(error) {
   const code = error && error.code ? error.code : "";
   if (code.includes("invalid-credential")) return "e-mail ou senha invalidos.";
-  if (code.includes("user-not-found")) return "usuario nao encontrado.";
+  if (code.includes("user-not-found")) return "usuário não encontrado.";
   if (code.includes("wrong-password")) return "senha invalida.";
   if (code.includes("too-many-requests")) return "muitas tentativas. Aguarde e tente novamente.";
   return error.message || "erro desconhecido.";

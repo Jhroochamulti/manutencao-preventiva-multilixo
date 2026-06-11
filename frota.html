@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Frota | Sistema de Manutencao Multilixo</title>
+    <title>Frota | Sistema de Manutenção Multilixo</title>
     <link rel="stylesheet" href="./styles.css?v=dev-frota-3" />
   </head>
   <body class="app-shell fleet-page">
@@ -12,22 +12,22 @@
         <img class="brand-logo" src="./assets/logo-multilixo.png" alt="Grupo Multilixo" />
       </div>
       <nav class="top-actions" aria-label="Modulos">
-        <a class="secondary-link" href="./portal.html?v=dev-portal-1">Inicio</a>
+        <a class="secondary-link" href="./portal.html?v=dev-portal-1">Início</a>
         <a class="secondary-link" href="./acesso.html?v=dev-acesso-1">Acesso</a>
-        <div class="nav-group" aria-label="Operacao">
-          <span class="nav-label">Operacao</span>
+        <div class="nav-group" aria-label="Manutenção">
+          <span class="nav-label">Manutenção</span>
           <a class="secondary-link" href="./index.html?v=54">Preventivas</a>
           <a class="secondary-link active-link" href="./frota.html">Frota</a>
           <a class="secondary-link" href="./corretivas.html">Corretivas</a>
           <a class="secondary-link" href="./materiais.html?v=dev-materiais-1">Materiais</a>
-          <a class="secondary-link" href="./usuarios.html?v=dev-usuarios-1">Usuarios</a>
+          <a class="secondary-link" href="./usuarios.html?v=dev-usuarios-1">Usuários</a>
         </div>
-        <div class="nav-group" aria-label="Analises">
-          <span class="nav-label">Analises</span>
+        <div class="nav-group" aria-label="Análises">
+          <span class="nav-label">Análises</span>
           <a class="secondary-link" href="./mtr.html?v=dev-mtr-1">Painel MTR</a>
           <a class="secondary-link" href="./dashboard.html">Dashboard</a>
           <a class="secondary-link" href="./sla.html?v=dev-sla-1">SLA</a>
-          <a class="secondary-link" href="./relatorios.html?v=dev-relatorios-1">Relatorios</a>
+          <a class="secondary-link" href="./relatorios.html?v=dev-relatorios-1">Relatórios</a>
         </div>
       </nav>
     </header>
@@ -35,23 +35,23 @@
     <main>
       <section class="module-hero">
         <div>
-          <p class="eyebrow">Sistema Web de Gestao de Manutencao</p>
+          <p class="eyebrow">Sistema Web de Gestão de Manutenção</p>
           <h1>Frota total</h1>
           <p>
-            Cadastre, consulte e sincronize caminhoes, maquinas, utilitarios e geradores a partir do inventario oficial.
+            Cadastre, consulte e sincronize caminhões, máquinas, utilitários e geradores a partir do inventário oficial.
           </p>
         </div>
         <div class="dev-status">
           <strong>Ambiente de desenvolvimento</strong>
-          <span>Nada desta pagina foi publicado na versao principal sem aprovacao.</span>
+          <span>Nada desta página foi publicado na versão principal sem aprovação.</span>
         </div>
       </section>
 
       <section class="auth-panel" aria-labelledby="authTitle">
         <div>
           <p class="eyebrow">Acesso restrito</p>
-          <h2 id="authTitle">Login da aplicacao</h2>
-          <p>Entre com o usuario criado no Firebase para carregar e sincronizar a frota online.</p>
+          <h2 id="authTitle">Login da aplicação</h2>
+          <p>Entre com o usuário criado no Firebase para carregar e sincronizar a frota online.</p>
         </div>
         <form id="loginForm" class="auth-form">
           <label>
@@ -74,11 +74,11 @@
           <strong id="fleetTotal">0</strong>
         </article>
         <article>
-          <span>Caminhoes e similares</span>
+          <span>Caminhões e similares</span>
           <strong id="fleetTrucks">0</strong>
         </article>
         <article>
-          <span>Maquinas e similares</span>
+          <span>Máquinas e similares</span>
           <strong id="fleetMachines">0</strong>
         </article>
         <article>
@@ -91,7 +91,7 @@
         <div class="panel-title">
           <div>
             <p class="eyebrow">Classe operacional</p>
-            <h2 id="operationTitle">Distribuicao da frota por operacao</h2>
+            <h2 id="operationTitle">Distribuição da frota por classe de manutenção</h2>
           </div>
         </div>
         <div class="operation-grid" id="operationGrid"></div>
@@ -101,7 +101,7 @@
         <div class="panel-title">
           <div>
             <p class="eyebrow">Carga da base</p>
-            <h2 id="importTitle">Importar inventario da frota</h2>
+            <h2 id="importTitle">Importar inventário da frota</h2>
           </div>
         </div>
 
@@ -113,7 +113,7 @@
           </label>
           <div class="import-actions">
             <button class="primary-button" id="previewImportButton" type="button">Analisar arquivo</button>
-            <button class="secondary-button" id="confirmImportButton" type="button" disabled>Confirmar sincronizacao</button>
+            <button class="secondary-button" id="confirmImportButton" type="button" disabled>Confirmar sincronização</button>
           </div>
         </div>
 
@@ -131,7 +131,7 @@
             <strong id="inactiveCount">0</strong>
           </article>
           <article>
-            <span>Sem alteracao</span>
+            <span>Sem alteração</span>
             <strong id="sameCount">0</strong>
           </article>
         </div>
@@ -144,8 +144,8 @@
           </div>
           <select id="fleetCategoryFilter" class="select-filter" aria-label="Categoria">
             <option value="all">Todas as categorias</option>
-            <option value="caminhao">Caminhoes</option>
-            <option value="maquina">Maquinas</option>
+            <option value="caminhao">Caminhões</option>
+            <option value="maquina">Máquinas</option>
             <option value="utilitario">Utilitarios</option>
             <option value="gerador">Geradores</option>
             <option value="outro">Outros</option>
@@ -178,7 +178,7 @@
           </table>
           <div class="empty-state" id="fleetEmptyState">
             <strong>Nenhum ativo carregado</strong>
-            <p>Importe o inventario oficial para iniciar o cadastro da frota.</p>
+            <p>Importe o inventário oficial para iniciar o cadastro da frota.</p>
           </div>
         </div>
       </section>

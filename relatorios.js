@@ -37,8 +37,8 @@ loginForm.addEventListener("submit", async (event) => {
     await signInWithEmailAndPassword(auth, loginEmail.value.trim(), loginPassword.value);
     loginPassword.value = "";
   } catch (error) {
-    alert(`Nao foi possivel entrar: ${friendlyAuthError(error)}`);
-    setAuthStatus("Login nao realizado.", "warning");
+    alert(`Não foi possível entrar: ${friendlyAuthError(error)}`);
+    setAuthStatus("Login não realizado.", "warning");
   }
 });
 
@@ -68,7 +68,7 @@ exportPdfButton.addEventListener("click", exportPdf);
 function initFirebase() {
   const config = window.MULTILIXO_FIREBASE_CONFIG;
   if (!config || !config.projectId) {
-    setAuthStatus("Firebase nao configurado.", "warning");
+    setAuthStatus("Firebase não configurado.", "warning");
     updateAuthUi();
     return;
   }
@@ -80,7 +80,7 @@ function initFirebase() {
     currentUser = user;
     updateAuthUi();
     if (user) {
-      setAuthStatus(`Conectado como ${user.email}. Carregando relatorios...`);
+      setAuthStatus(`Conectado como ${user.email}. Carregando relatórios...`);
       await loadData();
       setAuthStatus(`Dados carregados: ${fleet.length} ativos, ${correctives.length} corretiva(s), ${materials.length} material(is).`);
     } else {
@@ -141,7 +141,7 @@ function buildFleetReport() {
     ...record,
     activeLabel: record.active === false ? "Inativo" : "Ativo"
   })), ["equipment", "plate", "category", "operationalClass", "manufacturer", "model", "branch"]);
-  return { title: "Relatorio de frota", columns, rows, openCount: rows.filter((row) => row.active !== false).length, criticalCount: 0, bottleneckCount: 0 };
+  return { title: "Relatório de frota", columns, rows, openCount: rows.filter((row) => row.active !== false).length, criticalCount: 0, bottleneckCount: 0 };
 }
 
 function buildCorrectiveReport() {
@@ -160,10 +160,10 @@ function buildCorrectiveReport() {
     ...record,
     openedAtLabel: formatDateTime(record.openedAt),
     slaLabel: `${formatNumber(hoursBetween(record.openedAt, record.finishedAt || new Date()))}h`,
-    isStoppedLabel: record.isStopped ? "Sim" : "Nao"
+    isStoppedLabel: record.isStopped ? "Sim" : "Não"
   })), ["equipment", "plate", "branch", "failureType", "priority", "status", "assignedTo", "description"]);
   return {
-    title: "Relatorio de corretivas",
+    title: "Relatório de corretivas",
     columns,
     rows,
     openCount: rows.filter((row) => !["Concluido", "Cancelado"].includes(row.status)).length,
@@ -182,7 +182,7 @@ function buildMaterialReport() {
     ["maintenanceType", "Tipo"],
     ["status", "Status"],
     ["requestedAtLabel", "Solicitado"],
-    ["availableAtLabel", "Disponivel"],
+    ["availableAtLabel", "Disponível"],
     ["pickedUpAtLabel", "Retirado"],
     ["leadLabel", "Lead time"]
   ];
@@ -195,7 +195,7 @@ function buildMaterialReport() {
     leadLabel: `${formatNumber(materialLeadDays(record))}d`
   })), ["equipment", "plate", "branch", "material", "maintenanceType", "status", "supplier", "notes"]);
   return {
-    title: "Relatorio de materiais",
+    title: "Relatório de materiais",
     columns,
     rows,
     openCount: rows.filter((row) => !["Retirado", "Cancelado"].includes(row.status)).length,
@@ -219,7 +219,7 @@ function buildSlaReport() {
         status: record.status,
         elapsedLabel: `${formatNumber(elapsed)}h`,
         goalLabel: `${formatNumber(goal)}h`,
-        slaStatus: elapsed <= goal ? "Dentro" : elapsed <= goal * 1.5 ? "Atencao" : "Fora"
+        slaStatus: elapsed <= goal ? "Dentro" : elapsed <= goal * 1.5 ? "Atenção" : "Fora"
       };
     });
   const materialRows = materials
@@ -236,7 +236,7 @@ function buildSlaReport() {
         status: record.status,
         elapsedLabel: `${formatNumber(elapsed)}d`,
         goalLabel: `${formatNumber(goal)}d`,
-        slaStatus: elapsed <= goal ? "Dentro" : elapsed <= goal * 1.5 ? "Atencao" : "Fora"
+        slaStatus: elapsed <= goal ? "Dentro" : elapsed <= goal * 1.5 ? "Atenção" : "Fora"
       };
     });
   const columns = [
@@ -252,11 +252,11 @@ function buildSlaReport() {
   ];
   const rows = filterRows([...correctiveRows, ...materialRows], ["process", "equipment", "plate", "branch", "description", "status", "slaStatus"]);
   return {
-    title: "Relatorio de SLA",
+    title: "Relatório de SLA",
     columns,
     rows,
     openCount: rows.length,
-    criticalCount: rows.filter((row) => row.slaStatus === "Atencao").length,
+    criticalCount: rows.filter((row) => row.slaStatus === "Atenção").length,
     bottleneckCount: rows.filter((row) => row.slaStatus === "Fora").length
   };
 }
@@ -305,7 +305,7 @@ function exportPdf() {
   const rows = currentRows.map((row) => `<tr>${currentColumns.map(([field]) => `<td>${escapeHtml(row[field] || "-")}</td>`).join("")}</tr>`).join("");
   const report = window.open("", "_blank", "noopener,noreferrer,width=1200,height=800");
   if (!report) {
-    alert("Nao foi possivel abrir a janela de PDF.");
+    alert("Não foi possível abrir a janela de PDF.");
     return;
   }
   report.document.write(`
@@ -398,7 +398,7 @@ function formatDateTime(value) {
 
 function countBy(records, field) {
   return records.reduce((acc, record) => {
-    const label = record[field] || "Sem informacao";
+    const label = record[field] || "Sem informação";
     acc[label] = (acc[label] || 0) + 1;
     return acc;
   }, {});

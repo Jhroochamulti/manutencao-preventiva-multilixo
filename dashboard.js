@@ -41,8 +41,8 @@ loginForm.addEventListener("submit", async (event) => {
     await signInWithEmailAndPassword(auth, loginEmail.value.trim(), loginPassword.value);
     loginPassword.value = "";
   } catch (error) {
-    alert(`Nao foi possivel entrar: ${friendlyAuthError(error)}`);
-    setAuthStatus("Login nao realizado.", "warning");
+    alert(`Não foi possível entrar: ${friendlyAuthError(error)}`);
+    setAuthStatus("Login não realizado.", "warning");
   }
 });
 
@@ -70,7 +70,7 @@ function initFirebase() {
   const config = window.MULTILIXO_FIREBASE_CONFIG;
 
   if (!config || !config.projectId) {
-    setAuthStatus("Firebase nao configurado.", "warning");
+    setAuthStatus("Firebase não configurado.", "warning");
     updateAuthUi();
     return;
   }
@@ -170,8 +170,8 @@ function renderVisualAnalysis(fleet, openCorrectives) {
 
 function renderFleetCategoryDonut(fleet) {
   const labels = {
-    caminhao: "Caminhoes",
-    maquina: "Maquinas",
+    caminhao: "Caminhões",
+    maquina: "Máquinas",
     utilitario: "Utilitarios",
     gerador: "Geradores",
     outro: "Outros"
@@ -186,7 +186,7 @@ function renderFleetCategoryDonut(fleet) {
   const donut = document.querySelector("#fleetCategoryDonut");
   const legend = document.querySelector("#fleetCategoryLegend");
   const entries = Object.entries(countBy(fleet, "category"))
-    .filter(([category]) => category !== "Sem informacao")
+    .filter(([category]) => category !== "Sem informação")
     .sort((a, b) => b[1] - a[1]);
   const total = fleet.length;
 
@@ -228,7 +228,7 @@ function renderSlaStatusChart(openCorrectives) {
 
   const items = [
     ["ok", "Dentro da meta", counts.ok, "#bfdd25"],
-    ["attention", "Atencao", counts.attention, "#f18225"],
+    ["attention", "Atenção", counts.attention, "#f18225"],
     ["late", "Fora da meta", counts.late, "#d92d20"]
   ];
 
@@ -321,7 +321,7 @@ function renderRanking(selector, counts, total, limit) {
     return;
   }
 
-  container.innerHTML = items.map(([label, count]) => rankingRow(label || "Sem informacao", count, total)).join("");
+  container.innerHTML = items.map(([label, count]) => rankingRow(label || "Sem informação", count, total)).join("");
 }
 
 function renderPriorityRanking(openCorrectives) {
@@ -395,7 +395,7 @@ function renderAssetRiskTable(fleet, openCorrectives) {
       <td data-label="Corretivas abertas">${item.records.length}</td>
       <td data-label="Prioridade maxima">${priorityPill(item.maxPriority)}</td>
       <td data-label="SLA maior"><span class="stage-pill ${item.maxSla > 72 ? "bottleneck" : item.maxSla > 24 ? "attention" : "ok"}">${formatNumber(item.maxSla)}h</span></td>
-      <td data-label="Parado">${item.stopped ? `<span class="status-pill danger">Sim</span>` : `<span class="dash-pill">Nao</span>`}</td>
+      <td data-label="Parado">${item.stopped ? `<span class="status-pill danger">Sim</span>` : `<span class="dash-pill">Não</span>`}</td>
     </tr>
   `).join("");
 
@@ -432,7 +432,7 @@ function syncBranchFilter() {
 
 function countBy(records, field) {
   return records.reduce((acc, record) => {
-    const label = record[field] || "Sem informacao";
+    const label = record[field] || "Sem informação";
     acc[label] = (acc[label] || 0) + 1;
     return acc;
   }, {});
@@ -482,7 +482,7 @@ function setAuthStatus(text, state = "") {
 function friendlyAuthError(error) {
   const code = error && error.code ? error.code : "";
   if (code.includes("invalid-credential")) return "e-mail ou senha invalidos.";
-  if (code.includes("user-not-found")) return "usuario nao encontrado.";
+  if (code.includes("user-not-found")) return "usuário não encontrado.";
   if (code.includes("wrong-password")) return "senha invalida.";
   return error.message || "erro desconhecido.";
 }

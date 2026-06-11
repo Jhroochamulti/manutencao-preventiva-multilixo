@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Usuarios | Sistema de Manutencao Multilixo</title>
+    <title>Usuários | Sistema de Manutenção Multilixo</title>
     <link rel="stylesheet" href="./styles.css?v=dev-usuarios-1" />
   </head>
   <body class="app-shell users-page">
@@ -12,22 +12,22 @@
         <img class="brand-logo" src="./assets/logo-multilixo.png" alt="Grupo Multilixo" />
       </div>
       <nav class="top-actions" aria-label="Modulos">
-        <a class="secondary-link" href="./portal.html?v=dev-portal-1">Inicio</a>
+        <a class="secondary-link" href="./portal.html?v=dev-portal-1">Início</a>
         <a class="secondary-link" href="./acesso.html?v=dev-acesso-1">Acesso</a>
-        <div class="nav-group" aria-label="Operacao">
-          <span class="nav-label">Operacao</span>
+        <div class="nav-group" aria-label="Manutenção">
+          <span class="nav-label">Manutenção</span>
           <a class="secondary-link" href="./index.html?v=54">Preventivas</a>
           <a class="secondary-link" href="./frota.html?v=dev-frota-4">Frota</a>
           <a class="secondary-link" href="./corretivas.html?v=dev-corretivas-1">Corretivas</a>
           <a class="secondary-link" href="./materiais.html?v=dev-materiais-1">Materiais</a>
-          <a class="secondary-link active-link" href="./usuarios.html?v=dev-usuarios-1">Usuarios</a>
+          <a class="secondary-link active-link" href="./usuarios.html?v=dev-usuarios-1">Usuários</a>
         </div>
-        <div class="nav-group" aria-label="Analises">
-          <span class="nav-label">Analises</span>
+        <div class="nav-group" aria-label="Análises">
+          <span class="nav-label">Análises</span>
           <a class="secondary-link" href="./mtr.html?v=dev-mtr-1">Painel MTR</a>
           <a class="secondary-link" href="./dashboard.html?v=dev-dashboard-1">Dashboard</a>
           <a class="secondary-link" href="./sla.html?v=dev-sla-1">SLA</a>
-          <a class="secondary-link" href="./relatorios.html?v=dev-relatorios-1">Relatorios</a>
+          <a class="secondary-link" href="./relatorios.html?v=dev-relatorios-1">Relatórios</a>
         </div>
       </nav>
     </header>
@@ -36,19 +36,19 @@
       <section class="module-hero">
         <div>
           <p class="eyebrow">Acessos e permissoes</p>
-          <h1>Usuarios</h1>
-          <p>Organize perfis de acesso por funcao, filial e status para preparar a aplicacao para uso controlado pela equipe.</p>
+          <h1>Usuários</h1>
+          <p>Organize perfis de acesso por função, filial e status para preparar a aplicação para uso controlado pela equipe.</p>
         </div>
         <div class="dev-status">
           <strong>Ambiente de desenvolvimento</strong>
-          <span>Cadastro complementar conectado ao Firebase, ainda sem publicacao oficial.</span>
+          <span>Cadastro complementar conectado ao Firebase, ainda sem publicação oficial.</span>
         </div>
       </section>
 
       <section class="auth-panel" aria-labelledby="authTitle">
         <div>
           <p class="eyebrow">Acesso restrito</p>
-          <h2 id="authTitle">Login da aplicacao</h2>
+          <h2 id="authTitle">Login da aplicação</h2>
           <p>Entre para consultar e atualizar os perfis cadastrados no Firestore.</p>
         </div>
         <form id="loginForm" class="auth-form">
@@ -66,8 +66,8 @@
         <div class="auth-status" id="authStatus">Aguardando login.</div>
       </section>
 
-      <section class="fleet-metrics users-metrics" aria-label="Indicadores de usuarios">
-        <article><span>Usuarios cadastrados</span><strong id="userTotal">0</strong></article>
+      <section class="fleet-metrics users-metrics" aria-label="Indicadores de usuários">
+        <article><span>Usuários cadastrados</span><strong id="userTotal">0</strong></article>
         <article><span>Ativos</span><strong id="userActive">0</strong></article>
         <article><span>Administradores</span><strong id="userAdmins">0</strong></article>
         <article><span>Leitura gerencial</span><strong id="userReaders">0</strong></article>
@@ -87,7 +87,7 @@
           <div class="form-grid">
             <label>
               Nome
-              <input id="userName" type="text" placeholder="Nome do usuario" required />
+              <input id="userName" type="text" placeholder="Nome do usuário" required />
             </label>
             <label>
               E-mail
@@ -99,7 +99,7 @@
                 <option value="admin">Administrador</option>
                 <option value="planejamento">Planejamento</option>
                 <option value="almoxarifado">Almoxarifado</option>
-                <option value="manutencao">Manutencao</option>
+                <option value="manutencao">Manutenção</option>
                 <option value="diretoria">Diretoria</option>
               </select>
             </label>
@@ -131,7 +131,7 @@
             <option value="admin">Administrador</option>
             <option value="planejamento">Planejamento</option>
             <option value="almoxarifado">Almoxarifado</option>
-            <option value="manutencao">Manutencao</option>
+            <option value="manutencao">Manutenção</option>
             <option value="diretoria">Diretoria</option>
           </select>
           <select id="userStatusFilter" class="select-filter" aria-label="Status">
@@ -150,13 +150,13 @@
                 <th>Perfil</th>
                 <th>Filiais</th>
                 <th>Status</th>
-                <th>Acoes</th>
+                <th>Ações</th>
               </tr>
             </thead>
             <tbody id="usersTableBody"></tbody>
           </table>
           <div class="empty-state">
-            <strong>Entre para carregar os usuarios</strong>
+            <strong>Entre para carregar os usuários</strong>
             <p>Os perfis de acesso serao exibidos apos o login.</p>
           </div>
         </div>
@@ -170,7 +170,7 @@
         <td data-label="Perfil"></td>
         <td data-label="Filiais"></td>
         <td data-label="Status"></td>
-        <td data-label="Acoes" class="table-actions"></td>
+        <td data-label="Ações" class="table-actions"></td>
       </tr>
     </template>
 

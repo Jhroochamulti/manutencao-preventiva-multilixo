@@ -56,8 +56,8 @@ loginForm.addEventListener("submit", async (event) => {
     await signInWithEmailAndPassword(auth, loginEmail.value.trim(), loginPassword.value);
     loginPassword.value = "";
   } catch (error) {
-    alert(`Nao foi possivel entrar: ${friendlyAuthError(error)}`);
-    setAuthStatus("Login nao realizado.", "warning");
+    alert(`Não foi possível entrar: ${friendlyAuthError(error)}`);
+    setAuthStatus("Login não realizado.", "warning");
   }
 });
 
@@ -79,7 +79,7 @@ equipmentSearch.addEventListener("blur", () => {
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (!currentUser) {
-    alert("Entre com seu usuario antes de salvar.");
+    alert("Entre com seu usuário antes de salvar.");
     return;
   }
 
@@ -112,7 +112,7 @@ form.addEventListener("submit", async (event) => {
     resetForm();
     await loadCorrectives();
   } catch (error) {
-    alert(`Nao foi possivel salvar a corretiva: ${error.message}`);
+    alert(`Não foi possível salvar a corretiva: ${error.message}`);
   } finally {
     updateAuthUi();
   }
@@ -143,7 +143,7 @@ function initFirebase() {
   const config = window.MULTILIXO_FIREBASE_CONFIG;
 
   if (!config || !config.projectId) {
-    setAuthStatus("Firebase nao configurado.", "warning");
+    setAuthStatus("Firebase não configurado.", "warning");
     updateAuthUi();
     return;
   }
@@ -195,7 +195,7 @@ function populateFleetOptions() {
     })
     .join("");
   fleetLookupStatus.textContent = fleetRecords.length
-    ? `${fleetRecords.length} ativo(s) disponiveis para abertura de corretivas.`
+    ? `${fleetRecords.length} ativo(s) disponíveis para abertura de corretivas.`
     : "Entre para carregar a frota.";
 }
 
@@ -221,7 +221,7 @@ function fillFleetFields(record, showMissing = false) {
   if (record) {
     fleetLookupStatus.textContent = `${record.equipment} - ${record.plate || "sem placa"} - ${record.model || "sem modelo"}`;
   } else if (showMissing) {
-    fleetLookupStatus.textContent = "Equipamento nao encontrado na frota carregada.";
+    fleetLookupStatus.textContent = "Equipamento não encontrado na frota carregada.";
   }
 }
 
@@ -332,7 +332,7 @@ function renderTable(rows) {
     cells[3].innerHTML = correctiveStatusPill(record.status);
     cells[4].textContent = formatDateTime(record.openedAt);
     cells[5].innerHTML = `<span class="stage-pill ${slaClass(record)}">${formatNumber(slaHours(record))}h</span>`;
-    cells[6].innerHTML = record.isStopped ? `<span class="status-pill danger">Sim</span>` : `<span class="dash-pill">Nao</span>`;
+    cells[6].innerHTML = record.isStopped ? `<span class="status-pill danger">Sim</span>` : `<span class="dash-pill">Não</span>`;
     cells[7].innerHTML = `
       <div class="general-row-actions">
         <button class="table-action" type="button" data-action="edit" data-id="${record.id}">Editar</button>
@@ -487,7 +487,7 @@ function setAuthStatus(text, state = "") {
 function friendlyAuthError(error) {
   const code = error && error.code ? error.code : "";
   if (code.includes("invalid-credential")) return "e-mail ou senha invalidos.";
-  if (code.includes("user-not-found")) return "usuario nao encontrado.";
+  if (code.includes("user-not-found")) return "usuário não encontrado.";
   if (code.includes("wrong-password")) return "senha invalida.";
   return error.message || "erro desconhecido.";
 }

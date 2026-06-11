@@ -40,8 +40,8 @@ loginForm.addEventListener("submit", async (event) => {
     await signInWithEmailAndPassword(auth, loginEmail.value.trim(), loginPassword.value);
     loginPassword.value = "";
   } catch (error) {
-    alert(`Nao foi possivel entrar: ${friendlyAuthError(error)}`);
-    setAuthStatus("Login nao realizado.", "warning");
+    alert(`Não foi possível entrar: ${friendlyAuthError(error)}`);
+    setAuthStatus("Login não realizado.", "warning");
   }
 });
 
@@ -63,7 +63,7 @@ equipmentSearch.addEventListener("blur", () => {
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (!currentUser) {
-    alert("Entre com seu usuario antes de salvar.");
+    alert("Entre com seu usuário antes de salvar.");
     return;
   }
 
@@ -90,7 +90,7 @@ form.addEventListener("submit", async (event) => {
     resetForm();
     await loadMaterials();
   } catch (error) {
-    alert(`Nao foi possivel salvar o material: ${error.message}`);
+    alert(`Não foi possível salvar o material: ${error.message}`);
   } finally {
     updateAuthUi();
   }
@@ -117,7 +117,7 @@ function initDefaults() {
 function initFirebase() {
   const config = window.MULTILIXO_FIREBASE_CONFIG;
   if (!config || !config.projectId) {
-    setAuthStatus("Firebase nao configurado.", "warning");
+    setAuthStatus("Firebase não configurado.", "warning");
     updateAuthUi();
     return;
   }
@@ -160,7 +160,7 @@ function populateFleetOptions() {
     const label = [record.equipment, record.plate, record.model, record.branch].filter(Boolean).join(" - ");
     return `<option value="${escapeHtml(record.equipment || record.id)}">${escapeHtml(label)}</option>`;
   }).join("");
-  fleetLookupStatus.textContent = fleetRecords.length ? `${fleetRecords.length} ativo(s) disponiveis para vincular materiais.` : "Entre para carregar a frota.";
+  fleetLookupStatus.textContent = fleetRecords.length ? `${fleetRecords.length} ativo(s) disponíveis para vincular materiais.` : "Entre para carregar a frota.";
 }
 
 function findFleet(value) {
@@ -177,7 +177,7 @@ function fillFleetFields(record, showMissing = false) {
   if (record) {
     fleetLookupStatus.textContent = `${record.equipment} - ${record.plate || "sem placa"} - ${record.model || "sem modelo"}`;
   } else if (showMissing) {
-    fleetLookupStatus.textContent = "Equipamento nao encontrado na frota carregada.";
+    fleetLookupStatus.textContent = "Equipamento não encontrado na frota carregada.";
   }
 }
 
@@ -298,7 +298,7 @@ function editMaterial(id) {
 }
 
 async function deleteMaterial(id) {
-  if (!confirm("Excluir esta solicitacao de material?")) return;
+  if (!confirm("Excluir esta solicitação de material?")) return;
   await deleteDoc(doc(db, MATERIAL_COLLECTION, id));
   await loadMaterials();
 }
@@ -395,7 +395,7 @@ function setAuthStatus(text, state = "") {
 function friendlyAuthError(error) {
   const code = error && error.code ? error.code : "";
   if (code.includes("invalid-credential")) return "e-mail ou senha invalidos.";
-  if (code.includes("user-not-found")) return "usuario nao encontrado.";
+  if (code.includes("user-not-found")) return "usuário não encontrado.";
   if (code.includes("wrong-password")) return "senha invalida.";
   return error.message || "erro desconhecido.";
 }

@@ -12,22 +12,22 @@
         <img class="brand-logo" src="./assets/logo-multilixo.png" alt="Grupo Multilixo" />
       </div>
       <nav class="top-actions" aria-label="Modulos">
-        <a class="secondary-link" href="./portal.html?v=dev-portal-1">Inicio</a>
+        <a class="secondary-link" href="./portal.html?v=dev-portal-1">Início</a>
         <a class="secondary-link" href="./acesso.html?v=dev-acesso-1">Acesso</a>
-        <div class="nav-group" aria-label="Operacao">
-          <span class="nav-label">Operacao</span>
+        <div class="nav-group" aria-label="Manutenção">
+          <span class="nav-label">Manutenção</span>
           <a class="secondary-link" href="./index.html?v=54">Preventivas</a>
           <a class="secondary-link" href="./frota.html?v=dev-frota-4">Frota</a>
           <a class="secondary-link" href="./corretivas.html?v=dev-corretivas-1">Corretivas</a>
           <a class="secondary-link" href="./materiais.html?v=dev-materiais-1">Materiais</a>
-          <a class="secondary-link" href="./usuarios.html?v=dev-usuarios-1">Usuarios</a>
+          <a class="secondary-link" href="./usuarios.html?v=dev-usuarios-1">Usuários</a>
         </div>
-        <div class="nav-group" aria-label="Analises">
-          <span class="nav-label">Analises</span>
+        <div class="nav-group" aria-label="Análises">
+          <span class="nav-label">Análises</span>
           <a class="secondary-link" href="./mtr.html?v=dev-mtr-1">Painel MTR</a>
           <a class="secondary-link" href="./dashboard.html?v=dev-dashboard-1">Dashboard</a>
           <a class="secondary-link" href="./sla.html?v=dev-sla-1">SLA</a>
-          <a class="secondary-link active-link" href="./relatorios.html?v=dev-relatorios-1">Relatorios</a>
+          <a class="secondary-link active-link" href="./relatorios.html?v=dev-relatorios-1">Relatórios</a>
         </div>
       </nav>
     </header>
@@ -67,14 +67,14 @@
       </section>
 
       <section class="dashboard-filters report-filters">
-        <select id="reportType" class="select-filter" aria-label="Tipo de relatorio">
+        <select id="reportType" class="select-filter" aria-label="Tipo de relatório">
           <option value="fleet">Frota</option>
           <option value="correctives">Corretivas</option>
           <option value="materials">Materiais</option>
           <option value="sla">SLA</option>
         </select>
         <div class="search-box">
-          <input id="reportSearch" type="search" placeholder="Buscar no relatorio" />
+          <input id="reportSearch" type="search" placeholder="Buscar no relatório" />
         </div>
         <select id="branchFilter" class="select-filter" aria-label="Filial">
           <option value="all">Todas as filiais</option>
@@ -83,10 +83,10 @@
         <button class="primary-button" id="exportPdfButton" type="button" disabled>Gerar PDF</button>
       </section>
 
-      <section class="fleet-metrics report-metrics" aria-label="Resumo do relatorio">
+      <section class="fleet-metrics report-metrics" aria-label="Resumo do relatório">
         <article><span>Registros</span><strong id="reportTotal">0</strong></article>
         <article><span>Abertos / ativos</span><strong id="reportOpen">0</strong></article>
-        <article><span>Criticos</span><strong id="reportCritical">0</strong></article>
+        <article><span>Críticos</span><strong id="reportCritical">0</strong></article>
         <article><span>Gargalos</span><strong id="reportBottlenecks">0</strong></article>
       </section>
 
@@ -94,7 +94,7 @@
         <div class="panel-title">
           <div>
             <p class="eyebrow">Resultado</p>
-            <h2 id="reportTitle">Relatorio de frota</h2>
+            <h2 id="reportTitle">Relatório de frota</h2>
           </div>
         </div>
         <div class="table-wrap is-empty">

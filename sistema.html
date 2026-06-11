@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sistema de Manutenção Multilixo</title>
+    <link rel="stylesheet" href="./sistema.css?v=41" />
+  </head>
+  <body>
+    <div id="app" class="app">
+      <aside class="sidebar">
+        <a class="brand" href="#dashboard" aria-label="Sistema de Manutenção Multilixo">
+          <img src="./assets/logo-multilixo.png" alt="Grupo Multilixo" />
+        </a>
+        <nav class="nav" aria-label="Módulos do sistema">
+          <a href="#dashboard" data-route="dashboard">Painel geral</a>
+          <a href="#frota" data-route="frota">Frota</a>
+          <a href="#preventivas" data-route="preventivas">Preventivas</a>
+          <a href="#painel-preventivas" data-route="painel-preventivas">Painel Preventivas</a>
+          <a href="#corretivas" data-route="corretivas">Corretivas</a>
+          <a href="#materiais" data-route="materiais">Materiais</a>
+          <a href="#mtr" data-route="mtr">VTR / MTR</a>
+          <a href="#sla" data-route="sla">SLA</a>
+          <a href="#relatorios" data-route="relatorios">Relatórios</a>
+        </nav>
+        <div class="user-box">
+          <span id="userEmail">Aguardando login</span>
+          <button id="logoutButton" class="link-button" type="button">Sair</button>
+        </div>
+      </aside>
+
+      <section class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Sistema Web de Gestão de Manutenção</p>
+            <h1 id="pageTitle">Painel geral</h1>
+          </div>
+          <div class="topbar-actions">
+            <span id="syncStatus" class="sync-pill">Conectando...</span>
+            <button id="refreshButton" class="ghost-button" type="button">Atualizar</button>
+          </div>
+        </header>
+        <main id="view" class="view" aria-live="polite"></main>
+      </section>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <section id="loginPanel" class="login-panel">
+      <form id="loginForm" class="login-card">
+        <img src="./assets/logo-multilixo.png" alt="Grupo Multilixo" />
+        <h2>Acesso ao sistema</h2>
+        <p>Entre com o usuário autorizado para alimentar e consultar os dados de manutenção.</p>
+        <label>
+          E-mail
+          <input id="loginEmail" type="email" autocomplete="email" required />
+        </label>
+        <label>
+          Senha
+          <input id="loginPassword" type="password" autocomplete="current-password" required />
+        </label>
+        <button class="primary-button" type="submit">Entrar</button>
+        <span id="loginMessage" class="form-message"></span>
+      </form>
+    </section>
+
+    <script src="./firebase-config.js"></script>
+    <script type="module" src="./sistema.js?v=44"></script>
+  </body>
+</html>

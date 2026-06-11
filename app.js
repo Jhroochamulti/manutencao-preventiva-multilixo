@@ -1,6 +1,13 @@
+import { getApps, initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { collection, deleteDoc, doc, getDocs, getFirestore, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
 const STORAGE_KEY = "multilixo-preventivas";
+const FLEET_STORAGE_KEY = "multilixo-fleet-dev";
 const EDIT_KEY_STORAGE = "multilixo-edit-key";
 const SHARED_API_URL = "https://script.google.com/macros/s/AKfycbzXhMpVZQeFS4PEujgoNT47IKeIfbJ1G_PxEy7cPEuubEvEuEu5T9DoIHbh9UV5J-oZ/exec";
+const FLEET_COLLECTION = "fleet";
+const PREVENTIVE_COLLECTION = "preventives";
 
 const defaultRecords = [
   {
@@ -53,6 +60,17 @@ const defaultRecords = [
 let records = [];
 let activeFilter = "all";
 let searchTerm = "";
+let firebaseDb = null;
+let firebaseUser = null;
+let firebaseReadyPromise = null;
+let fleetAssets = [];
+let selectedFleetAsset = null;
+window.MULTILIXO_PREVENTIVE_DEBUG = {
+  auth: "inicializando",
+  fleetCount: 0,
+  fleetError: "",
+  preventiveCount: 0
+};
 const inventoryRecords = Array.isArray(window.MULTILIXO_INVENTARIO) ? window.MULTILIXO_INVENTARIO : [];
 const inventoryByPlate = new Map(inventoryRecords.map((item) => [normalizePlate(item.placa), item]));
 const INDICATOR_GOALS = {
@@ -122,8 +140,15 @@ form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const formData = new FormData(form);
+  selectedFleetAsset = findFleetAsset(formData.get("fleet")) || selectedFleetAsset;
+  if (!selectedFleetAsset?.id) {
+    alert("Selecione um ativo cadastrado na frota antes de salvar a preventiva.");
+    return;
+  }
+
   const record = {
     id: document.querySelector("#recordId").value || crypto.randomUUID(),
+    fleetId: selectedFleetAsset.id,
     machine: formData.get("machine").trim(),
     fleet: formData.get("fleet").trim().toUpperCase(),
     branch: formData.get("branch").trim(),
@@ -151,9 +176,13 @@ form.addEventListener("submit", async (event) => {
   const existingIndex = records.findIndex((item) => item.id === record.id);
   const action = existingIndex >= 0 ? "update" : "create";
 
+  records = mergeRecords(localRecords, firestoreRecords);
+  persistLocal();
+  return;
+
   try {
     const result = await sharedRequest(action, record);
-    const savedRecord = result.record || record;
+    const savedRecord = { ...record, ...(result.record || {}), fleetId: record.fleetId };
 
     if (existingIndex >= 0) {
       records[existingIndex] = savedRecord;
@@ -162,12 +191,25 @@ form.addEventListener("submit", async (event) => {
     }
 
     persistLocal();
+    await savePreventiveToFirestore(savedRecord);
     form.reset();
     document.querySelector("#recordId").value = "";
     formTitle.textContent = "Nova preventiva";
     render();
   } catch (error) {
-    alert(`Não foi possível salvar na planilha compartilhada: ${error.message}`);
+    if (existingIndex >= 0) {
+      records[existingIndex] = record;
+    } else {
+      records.unshift(record);
+    }
+
+    persistLocal();
+    await savePreventiveToFirestore(record);
+    form.reset();
+    document.querySelector("#recordId").value = "";
+    formTitle.textContent = "Nova preventiva";
+    render();
+    alert(`Preventiva salva no sistema. A planilha compartilhada não respondeu: ${error.message}`);
   }
 });
 
@@ -192,9 +234,21 @@ function populatePlateOptions() {
 
 function applyInventoryLookup(value, showMissing = false) {
   const plate = normalizePlate(value);
+  selectedFleetAsset = null;
 
   if (!plate) {
     setInventoryStatus("Digite a placa para buscar equipamento, filial, modelo e ano.", "");
+    return;
+  }
+
+  selectedFleetAsset = findFleetAsset(value);
+  if (selectedFleetAsset) {
+    fleetInput.value = selectedFleetAsset.plate || selectedFleetAsset.fleet || value;
+    document.querySelector("#machine").value = selectedFleetAsset.equipment || selectedFleetAsset.machine || "";
+    document.querySelector("#branch").value = selectedFleetAsset.branch || "";
+    document.querySelector("#model").value = selectedFleetAsset.model || "";
+    document.querySelector("#year").value = selectedFleetAsset.yearModel || selectedFleetAsset.year || "";
+    setInventoryStatus(`Ativo vinculado a frota: ${selectedFleetAsset.equipment || selectedFleetAsset.id} - ${selectedFleetAsset.model || "sem modelo"}.`, "success");
     return;
   }
 
@@ -227,20 +281,33 @@ function normalizePlate(value) {
 }
 
 async function loadRecords() {
-  const localRecords = readLocalRecords().filter((record) => !String(record.id || "").startsWith("mlx-default-"));
+  await initFirebaseBridge();
+  fleetAssets = await loadFleetAssets();
+  if (fleetAssets.length) {
+    setInventoryStatus(`${fleetAssets.length} ativo(s) da frota disponíveis para vínculo.`, "success");
+  } else {
+    setInventoryStatus("Frota ainda não carregada. Entre em Acesso ou aguarde a sincronização.", "warning");
+  }
+  const localRecords = readLocalRecords().filter((record) => record.fleetId && !String(record.id || "").startsWith("mlx-default-"));
+  const firestoreRecords = await loadFirestorePreventives();
 
   try {
     const result = await sharedRequest("list");
-    records = Array.isArray(result.records) ? result.records : [];
+    records = Array.isArray(result.records) ? result.records.filter((record) => record.fleetId) : [];
+    records = mergeRecords(records, firestoreRecords);
 
     if (!records.length && localRecords.length) {
       records = await migrateLocalRecords(localRecords);
     }
 
+    if (!records.length && firestoreRecords.length) {
+      records = firestoreRecords;
+    }
+
     persistLocal();
   } catch (error) {
     console.warn("Usando dados locais porque a planilha compartilhada não respondeu.", error);
-    records = localRecords;
+    records = mergeRecords(localRecords, firestoreRecords);
   }
 }
 
@@ -256,6 +323,212 @@ function readLocalRecords() {
 
 function persistLocal() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+}
+
+async function loadFleetAssets() {
+  const localFleet = readLocalFleet();
+
+  if (!firebaseDb) return localFleet;
+
+  try {
+    const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js");
+    const snapshot = await getDocs(collection(firebaseDb, FLEET_COLLECTION));
+    const onlineFleet = snapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
+    return mergeFleetAssets(localFleet, onlineFleet).filter((record) => record.active !== false);
+  } catch (error) {
+    console.warn("Não foi possível carregar frota do Firebase para preventivas.", error);
+    return localFleet;
+  }
+}
+
+function readLocalFleet() {
+  try {
+    const saved = localStorage.getItem(FLEET_STORAGE_KEY);
+    const parsed = saved ? JSON.parse(saved) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    console.warn("Frota local invalida.", error);
+    return [];
+  }
+}
+
+function mergeFleetAssets(primary, secondary) {
+  const merged = new Map();
+  [...primary, ...secondary].forEach((asset) => {
+    if (!asset) return;
+    const key = asset.id || asset.equipment || asset.plate;
+    if (!key) return;
+    merged.set(key, { ...(merged.get(key) || {}), ...asset });
+  });
+  return Array.from(merged.values());
+}
+
+function findFleetAsset(value) {
+  const query = normalizeFleetSearch(value);
+  if (!query) return null;
+
+  return fleetAssets.find((asset) => {
+    const values = [
+      asset.id,
+      asset.equipment,
+      asset.machine,
+      asset.plate,
+      asset.fleet,
+      `${asset.equipment || ""} ${asset.plate || ""}`
+    ].map(normalizeFleetSearch);
+    return values.includes(query);
+  }) || fleetAssets.find((asset) =>
+    normalizeFleetSearch([asset.equipment, asset.plate, asset.model].join(" ")).includes(query)
+  ) || null;
+}
+
+function normalizeFleetSearch(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9]/g, "")
+    .toUpperCase();
+}
+
+async function initFirebaseBridge() {
+  if (firebaseReadyPromise) return firebaseReadyPromise;
+
+  firebaseReadyPromise = (async () => {
+    const config = window.MULTILIXO_FIREBASE_CONFIG;
+    if (!config || !config.projectId) return;
+
+    try {
+      const [{ getApps, initializeApp }, { getAuth, onAuthStateChanged }, { getFirestore }] = await Promise.all([
+        import("https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js"),
+        import("https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js"),
+        import("https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js")
+      ]);
+
+      const app = getApps().length ? getApps()[0] : initializeApp(config);
+      const auth = getAuth(app);
+      firebaseDb = getFirestore(app);
+      firebaseUser = await new Promise((resolve) => {
+        let settled = false;
+        const fallback = setTimeout(() => {
+          if (settled) return;
+          settled = true;
+          resolve(auth.currentUser || null);
+        }, 2500);
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+          firebaseUser = user;
+
+          if (user) {
+            loadFleetAssets().then((assets) => {
+              fleetAssets = assets;
+              if (fleetInput?.value) applyInventoryLookup(fleetInput.value);
+            });
+          }
+
+          if (!settled && user) {
+            settled = true;
+            clearTimeout(fallback);
+            resolve(user);
+          }
+        });
+      });
+    } catch (error) {
+      console.warn("Firebase de preventivas indisponível.", error);
+    }
+  })();
+
+  return firebaseReadyPromise;
+}
+
+async function loadFirestorePreventives() {
+  if (!firebaseDb) return [];
+
+  try {
+    const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js");
+    const snapshot = await getDocs(collection(firebaseDb, PREVENTIVE_COLLECTION));
+    return snapshot.docs
+      .map((item) => fromFirestorePreventive(item.id, item.data()))
+      .filter((record) => record.fleetId);
+  } catch (error) {
+    console.warn("Não foi possível carregar preventivas do Firebase.", error);
+    return [];
+  }
+}
+
+async function savePreventiveToFirestore(record) {
+  if (!firebaseDb || !record?.id) return;
+
+  try {
+    const { doc, serverTimestamp, setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js");
+    await setDoc(doc(firebaseDb, PREVENTIVE_COLLECTION, record.id), {
+      ...toFirestorePreventive(record),
+      updatedAt: serverTimestamp(),
+      updatedBy: firebaseUser?.email || ""
+    }, { merge: true });
+  } catch (error) {
+    console.warn("Não foi possível sincronizar preventiva no Firebase.", error);
+  }
+}
+
+async function deletePreventiveFromFirestore(id) {
+  if (!firebaseDb || !id) return;
+
+  try {
+    const { deleteDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js");
+    await deleteDoc(doc(firebaseDb, PREVENTIVE_COLLECTION, id));
+  } catch (error) {
+    console.warn("Não foi possível excluir preventiva no Firebase.", error);
+  }
+}
+
+function mergeRecords(primary, secondary) {
+  const merged = new Map();
+  [...primary, ...secondary].forEach((record) => {
+    if (!record || String(record.id || "").startsWith("mlx-default-")) return;
+    if (!record.fleetId) return;
+    const key = record.id || `${record.fleet}-${record.requestDate}-${record.serviceType}`;
+    merged.set(key, { ...(merged.get(key) || {}), ...record });
+  });
+  return Array.from(merged.values());
+}
+
+function toFirestorePreventive(record) {
+  return {
+    fleetId: record.fleetId || "",
+    machine: record.machine || "",
+    equipment: record.machine || record.equipment || "",
+    fleet: record.fleet || "",
+    plate: record.fleet || record.plate || "",
+    branch: record.branch || "",
+    model: record.model || "",
+    year: record.year || "",
+    yearModel: record.year || record.yearModel || "",
+    serviceType: record.serviceType || "",
+    status: record.status || "",
+    requestDate: record.requestDate || "",
+    availableDate: record.availableDate || "",
+    pickupDate: record.pickupDate || "",
+    executionDate: record.executionDate || "",
+    notes: record.notes || ""
+  };
+}
+
+function fromFirestorePreventive(id, data) {
+  return {
+    id,
+    fleetId: data.fleetId || "",
+    machine: data.machine || data.equipment || "",
+    fleet: data.fleet || data.plate || "",
+    branch: data.branch || "",
+    model: data.model || "",
+    year: data.year || data.yearModel || "",
+    serviceType: data.serviceType || "",
+    status: data.status || "",
+    requestDate: data.requestDate || "",
+    availableDate: data.availableDate || "",
+    pickupDate: data.pickupDate || "",
+    executionDate: data.executionDate || "",
+    notes: data.notes || ""
+  };
 }
 
 async function migrateLocalRecords(localRecords) {
@@ -543,6 +816,9 @@ function editRecord(id) {
     const field = document.querySelector(`#${key === "id" ? "recordId" : key}`);
     if (field) field.value = value;
   });
+  selectedFleetAsset = record.fleetId
+    ? fleetAssets.find((asset) => asset.id === record.fleetId) || null
+    : findFleetAsset(record.fleet);
 
   formTitle.textContent = "Editar preventiva";
   formPanel.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -554,6 +830,7 @@ async function deleteRecord(id) {
 
   try {
     await sharedRequest("delete", { id });
+    await deletePreventiveFromFirestore(id);
     records = records.filter((item) => item.id !== id);
     persistLocal();
     render();
@@ -703,7 +980,7 @@ function exportPanelPdf() {
         <header>
           <div>
             <h1>Manutenção preventiva de máquinas</h1>
-            <p>Relatório de SLA operacional gerado em ${new Intl.DateTimeFormat("pt-BR").format(new Date())}</p>
+            <p>Relatório de SLA da manutenção gerado em ${new Intl.DateTimeFormat("pt-BR").format(new Date())}</p>
           </div>
           <button onclick="window.print()">Salvar em PDF</button>
         </header>

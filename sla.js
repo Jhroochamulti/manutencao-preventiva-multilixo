@@ -2,11 +2,11 @@ const CORRECTIVE_COLLECTION = "correctives";
 const MATERIAL_COLLECTION = "materials";
 
 const SLA_GOALS = {
-  correctiveCritica: { label: "Corretiva critica", hours: 4 },
+  correctiveCritica: { label: "Corretiva crítica", hours: 4 },
   correctiveAlta: { label: "Corretiva alta", hours: 12 },
-  correctiveDefault: { label: "Corretiva media/baixa", hours: 24 },
+  correctiveDefault: { label: "Corretiva média/baixa", hours: 24 },
   materialRequested: { label: "Material solicitado", days: 1 },
-  materialAvailable: { label: "Material disponivel ate retirada", days: 0.5 }
+  materialAvailable: { label: "Material disponível até retirada", days: 0.5 }
 };
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
@@ -38,8 +38,8 @@ loginForm.addEventListener("submit", async (event) => {
     await signInWithEmailAndPassword(auth, loginEmail.value.trim(), loginPassword.value);
     loginPassword.value = "";
   } catch (error) {
-    alert(`Nao foi possivel entrar: ${friendlyAuthError(error)}`);
-    setAuthStatus("Login nao realizado.", "warning");
+    alert(`Não foi possível entrar: ${friendlyAuthError(error)}`);
+    setAuthStatus("Login não realizado.", "warning");
   }
 });
 
@@ -66,7 +66,7 @@ document.querySelector("#slaFilter").addEventListener("change", (event) => {
 function initFirebase() {
   const config = window.MULTILIXO_FIREBASE_CONFIG;
   if (!config || !config.projectId) {
-    setAuthStatus("Firebase nao configurado.", "warning");
+    setAuthStatus("Firebase não configurado.", "warning");
     updateAuthUi();
     return;
   }
@@ -185,7 +185,7 @@ function renderGoals() {
   ];
   document.querySelector("#goalList").innerHTML = goals.map((goal) => `
     <div class="ranking-row">
-      <div><strong>${escapeHtml(goal)}</strong><span>Meta operacional configurada</span></div>
+      <div><strong>${escapeHtml(goal)}</strong><span>Meta de manutenção configurada</span></div>
       <b>OK</b>
     </div>
   `).join("");
@@ -256,7 +256,7 @@ function classifyRatio(ratio) {
 }
 
 function slaLabel(cls) {
-  return { ok: "Dentro", attention: "Atencao", bottleneck: "Fora" }[cls] || "-";
+  return { ok: "Dentro", attention: "Atenção", bottleneck: "Fora" }[cls] || "-";
 }
 
 function hoursBetween(start, end) {
@@ -304,7 +304,7 @@ function setAuthStatus(text, state = "") {
 function friendlyAuthError(error) {
   const code = error && error.code ? error.code : "";
   if (code.includes("invalid-credential")) return "e-mail ou senha invalidos.";
-  if (code.includes("user-not-found")) return "usuario nao encontrado.";
+  if (code.includes("user-not-found")) return "usuário não encontrado.";
   if (code.includes("wrong-password")) return "senha invalida.";
   return error.message || "erro desconhecido.";
 }
